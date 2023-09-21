@@ -31,7 +31,9 @@ func main() {
     check(err)
 
     // Get the driving directions
-    directions := getDirections(*client, SourceCoordinates, DestinationCoordinates)
+    directions, _ := getDirections(client, SourceCoordinates, DestinationCoordinates)
+	distance, _ := getDistanceMatrix(client, SourceCoordinates, DestinationCoordinates)
 
 	printDirections(directions)
+	printDistanceMatrix(distance)
 }

@@ -27,20 +27,52 @@ func printDirections(directions []maps.Route) {
     }
 }
 
-func getDirections(client maps.Client, begin string, end string) []maps.Route {
+func getDirections(client *maps.Client, start string, end string) ([]maps.Route, error) {
 	// Build the API request URL
-	url := fmt.Sprintf(GoogleMapsAPIURL, begin, end, GoogleMapsAPIKey)
+	url := fmt.Sprintf(GoogleMapsAPIURL, start, end, GoogleMapsAPIKey)
 	log.Debugf("API request URL: %s", url)
 
 	 // Build the directions request
 	 	directionsRequest := &maps.DirectionsRequest{
-        Origin:      begin,
+        Origin:      start,
         Destination: end,
     }
 
 	// Send the directions request
     routes, _, err := client.Directions(context.Background(), directionsRequest)
-    check(err)
+    if err != nil {
+        return nil, err
+    }
 
-	return routes
+	return routes, nil
+}
+
+func getDistanceMatrix(client *maps.Client, start string, end string) (*maps.DistanceMatrixResponse, error) {
+    // Build the distance matrix request
+    req := &maps.DistanceMatrixRequest{
+        Origins:      []string{start},
+        Destinations: []string{end},
+    }
+
+    // Send the distance matrix request
+    resp, err := client.DistanceMatrix(context.Background(), req)
+    if err != nil {
+        return nil, err
+    }
+
+    return resp, nil
+}
+
+func printDistanceMatrix(resp *maps.DistanceMatrixResponse) {
+	// Print the distance matrix
+    for _, row := range resp.Rows {
+        for _, element := range row.Elements {
+            if element.Status == "OK" {
+                log.Debugf("Distance: %v\n", element.Distance.HumanReadable)
+                log.Debugf("Duration: %v\n", element.Duration)
+            } else {
+                log.Debugf("Error: %v\n", element.Status)
+            }
+        }
+    }
 }
