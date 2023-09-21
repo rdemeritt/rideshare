@@ -28,10 +28,6 @@ func printDirections(directions []maps.Route) {
 }
 
 func getDirections(client *maps.Client, start string, end string) ([]maps.Route, error) {
-	// Build the API request URL
-	url := fmt.Sprintf(GoogleMapsAPIURL, start, end, GoogleMapsAPIKey)
-	log.Debugf("API request URL: %s", url)
-
 	 // Build the directions request
 	 	directionsRequest := &maps.DirectionsRequest{
         Origin:      start,

@@ -34,6 +34,8 @@ func main() {
     directions, _ := getDirections(client, SourceCoordinates, DestinationCoordinates)
 	distance, _ := getDistanceMatrix(client, SourceCoordinates, DestinationCoordinates)
 
-	printDirections(directions)
-	printDistanceMatrix(distance)
+	if getLogLevel() == "debug" {
+		printDirections(directions)
+		printDistanceMatrix(distance)
+	}
 }

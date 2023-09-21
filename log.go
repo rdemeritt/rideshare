@@ -32,3 +32,7 @@ func setLogLevel(logLevel string) {
 			log.Fatalf("Invalid logging level: %s", logLevel)
 	}
 }
+
+func getLogLevel() string {
+	return log.GetLevel().String()
+}
