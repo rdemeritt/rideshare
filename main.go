@@ -26,8 +26,12 @@ func parseCommandLineFlags() {
 }
 
 func main() {
+	// Create a new maps client
+    client, err := NewMapsClient()
+    check(err)
+
     // Get the driving directions
-    directions := getDirections(SourceCoordinates, DestinationCoordinates)
+    directions := getDirections(*client, SourceCoordinates, DestinationCoordinates)
 
 	printDirections(directions)
 }
