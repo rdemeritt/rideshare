@@ -1,11 +1,11 @@
 package main
 
 import (
-	t "rideshare/trip"
 	"rideshare/args"
-	"rideshare/log"
 	"rideshare/common"
 	"rideshare/gmapsclient"
+	"rideshare/log"
+	t "rideshare/trip"
 )
 
 func init() {
@@ -16,7 +16,7 @@ func main() {
 	// Parse command line flags
 	argv := args.Args{}
 	argv.ParseCommandLineFlags()
-	
+
 	// set log_level
 	log.SetLogLevel(argv.LogLevel)
 
@@ -24,6 +24,7 @@ func main() {
 	client, err := gmapsclient.NewMapsClient()
 	common.Check(err)
 
+	// Create a new Trip object
 	trip := t.NewTrip()
 
 	// populate Trip object
@@ -38,8 +39,9 @@ func main() {
 	if log.GetLogLevel() == "debug" {
 		t.PrintDistanceMatrix(fullTripMatrix)
 	}
-// 	// Populate the trip struct
-	trip.PopulateTrip(fullTripMatrix)
+	// 	// Populate the trip Details struct
+	trip.PopulateTripDetails(fullTripMatrix)
 
-	trip.PrintTrip()
+	// Print the trip details
+	trip.PrintTripDetails()
 }
