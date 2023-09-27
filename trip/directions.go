@@ -1,4 +1,4 @@
-package main
+package trip
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func printDirections(directions []maps.Route) {
+func PrintDirections(directions []maps.Route) {
 	// Print the driving directions
     for _, route := range directions {
         for _, leg := range route.Legs {
@@ -19,7 +19,7 @@ func printDirections(directions []maps.Route) {
     }
 }
 
-func getDirections(client *maps.Client, start string, end string) ([]maps.Route, error) {
+func GetDirections(client *maps.Client, start string, end string) ([]maps.Route, error) {
 	 // Build the directions request
 	 	directionsRequest := &maps.DirectionsRequest{
         Origin:      start,
@@ -35,14 +35,14 @@ func getDirections(client *maps.Client, start string, end string) ([]maps.Route,
 	return routes, nil
 }
 
-func getDistanceMatrix(client *maps.Client, driverLocation string, passengerStart string, passengerEnd string, units string) (*maps.DistanceMatrixResponse, error) {
+func GetDistanceMatrix(client *maps.Client, driverLocation string, passengerStart string, passengerEnd string, units string) (*maps.DistanceMatrixResponse, error) {
     // Build the distance matrix request
     request := &maps.DistanceMatrixRequest{
         Origins:      []string{driverLocation, passengerStart},
         Destinations: []string{passengerStart, passengerEnd},
     }
 
-	setUnits(units, request)
+	SetUnits(units, request)
 
     // Send the distance matrix request
     response, err := client.DistanceMatrix(context.Background(), request)
@@ -53,7 +53,7 @@ func getDistanceMatrix(client *maps.Client, driverLocation string, passengerStar
     return response, nil
 }
 
-func setUnits(units string, r *maps.DistanceMatrixRequest) {
+func SetUnits(units string, r *maps.DistanceMatrixRequest) {
 	switch units {
 	case "metric":
 		r.Units = maps.UnitsMetric
@@ -66,7 +66,7 @@ func setUnits(units string, r *maps.DistanceMatrixRequest) {
 	}
 }
 
-func printFullDistanceMatrix(resp *maps.DistanceMatrixResponse) {
+func PrintFullDistanceMatrix(resp *maps.DistanceMatrixResponse) {
 	// Print the distance matrix
     for _, row := range resp.Rows {
 		fmt.Println("row: ", row)
@@ -81,7 +81,7 @@ func printFullDistanceMatrix(resp *maps.DistanceMatrixResponse) {
     }
 }
 
-func printDistanceMatrix(resp *maps.DistanceMatrixResponse) {
+func PrintDistanceMatrix(resp *maps.DistanceMatrixResponse) {
     // Print the distance and duration for the first and last elements
     if len(resp.Rows) > 0 && len(resp.Rows[0].Elements) > 0 {
         // Print the distance and duration for the first element

@@ -1,11 +1,11 @@
-package main
+package log
 
 import (
 	"os"
 	log "github.com/sirupsen/logrus"
 )
 
-func initLog() {
+func InitLog() {
 	// Set the logging level
 	log.SetFormatter(&log.JSONFormatter{
 		PrettyPrint:     true,
@@ -16,7 +16,7 @@ func initLog() {
 	log.SetReportCaller(true)
 }
 
-func setLogLevel(logLevel string) {
+func SetLogLevel(logLevel string) {
 	log.SetOutput(os.Stdout)
 
 	switch logLevel {
@@ -33,6 +33,6 @@ func setLogLevel(logLevel string) {
 	}
 }
 
-func getLogLevel() string {
+func GetLogLevel() string {
 	return log.GetLevel().String()
 }
