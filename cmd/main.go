@@ -1,7 +1,7 @@
 package main
 
 import (
-	"rideshare/trip"
+	t "rideshare/trip"
 	"rideshare/args"
 	"rideshare/log"
 	"rideshare/common"
@@ -24,7 +24,7 @@ func main() {
 	client, err := gmapsclient.NewMapsClient()
 	common.Check(err)
 
-	trip := trip.NewTrip()
+	trip := t.NewTrip()
 
 	// populate Trip object
 	trip.SetDistanceUnits(argv.DistanceUnits)
