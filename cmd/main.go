@@ -1,7 +1,7 @@
 package main
 
 import (
-	t "rideshare/trip"
+	"rideshare/trip"
 	"rideshare/args"
 	"rideshare/log"
 	"rideshare/common"
@@ -19,12 +19,12 @@ func main() {
 	
 	// set log_level
 	log.SetLogLevel(argv.LogLevel)
-	
+
 	// Create a new maps client
 	client, err := gmapsclient.NewMapsClient()
 	common.Check(err)
 
-	trip := t.NewTrip()
+	trip := trip.NewTrip()
 
 	// populate Trip object
 	trip.SetDistanceUnits(argv.DistanceUnits)
