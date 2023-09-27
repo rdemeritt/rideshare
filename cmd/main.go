@@ -36,11 +36,7 @@ func main() {
 	fullTripMatrix, err := t.GetDistanceMatrix(client, trip.Coordinates.DriverLocation, trip.Coordinates.PassengerStart, trip.Coordinates.PassengerEnd, trip.Units.Distance)
 	common.Check(err)
 	if log.GetLogLevel() == "debug" {
-		// printDirections(passengerDirections)
 		t.PrintDistanceMatrix(fullTripMatrix)
-
-		// printDirections(driverToPassengerDirections)
-		// printDistanceMatrix(driverToPassengerDistance)
 	}
 // 	// Populate the trip struct
 	trip.PopulateTrip(fullTripMatrix)
