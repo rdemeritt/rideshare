@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	TripService_CalculateNewTrip_FullMethodName = "/rideshare.TripService/CalculateNewTrip"
+	TripService_GetTimeInNYC_FullMethodName     = "/rideshare.TripService/GetTimeInNYC"
 )
 
 // TripServiceClient is the client API for TripService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TripServiceClient interface {
 	CalculateNewTrip(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error)
+	GetTimeInNYC(ctx context.Context, in *NoInput, opts ...grpc.CallOption) (*StringResponse, error)
 }
 
 type tripServiceClient struct {
@@ -46,11 +48,21 @@ func (c *tripServiceClient) CalculateNewTrip(ctx context.Context, in *TripReques
 	return out, nil
 }
 
+func (c *tripServiceClient) GetTimeInNYC(ctx context.Context, in *NoInput, opts ...grpc.CallOption) (*StringResponse, error) {
+	out := new(StringResponse)
+	err := c.cc.Invoke(ctx, TripService_GetTimeInNYC_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TripServiceServer is the server API for TripService service.
 // All implementations must embed UnimplementedTripServiceServer
 // for forward compatibility
 type TripServiceServer interface {
 	CalculateNewTrip(context.Context, *TripRequest) (*TripResponse, error)
+	GetTimeInNYC(context.Context, *NoInput) (*StringResponse, error)
 	mustEmbedUnimplementedTripServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedTripServiceServer struct {
 
 func (UnimplementedTripServiceServer) CalculateNewTrip(context.Context, *TripRequest) (*TripResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CalculateNewTrip not implemented")
+}
+func (UnimplementedTripServiceServer) GetTimeInNYC(context.Context, *NoInput) (*StringResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTimeInNYC not implemented")
 }
 func (UnimplementedTripServiceServer) mustEmbedUnimplementedTripServiceServer() {}
 
@@ -92,6 +107,24 @@ func _TripService_CalculateNewTrip_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TripService_GetTimeInNYC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TripServiceServer).GetTimeInNYC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TripService_GetTimeInNYC_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TripServiceServer).GetTimeInNYC(ctx, req.(*NoInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TripService_ServiceDesc is the grpc.ServiceDesc for TripService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var TripService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CalculateNewTrip",
 			Handler:    _TripService_CalculateNewTrip_Handler,
+		},
+		{
+			MethodName: "GetTimeInNYC",
+			Handler:    _TripService_GetTimeInNYC_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
