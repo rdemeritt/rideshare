@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package rideshare;
+option go_package = "./trip";
+
+message TripRequest {
+  string passenger_start = 1;
+  string passenger_end = 2;
+  string driver_location = 3;
+  string distance_units = 4;
+}
+
+message TripResponse {
+  string driver_location_to_passenger_start_distance = 1;
+  string driver_location_to_passenger_start_duration = 2;
+  string passenger_start_to_passenger_end_distance = 3;
+  string passenger_start_to_passenger_end_duration = 4;
+}
+
+service TripService {
+  rpc CalculateNewTrip(TripRequest) returns (TripResponse);
+}
