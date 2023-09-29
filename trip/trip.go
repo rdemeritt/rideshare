@@ -7,24 +7,42 @@ import (
 	"googlemaps.github.io/maps"
 )
 
+
+type Coordinates struct {
+	PassengerStart string
+	PassengerEnd   string
+	DriverLocation string
+}
+
+type Units struct {
+	Distance string
+}
+
+type Details struct {
+	DriverLocationToPassengerStartDistance string
+	DriverLocationToPassengerStartDuration time.Duration
+	PassengerStartToPassengerEndDistance   string
+	PassengerStartToPassengerEndDuration   time.Duration
+}
+
 type Trip struct {
-	Coordinates struct {
-		PassengerStart string
-		PassengerEnd   string
-		DriverLocation string
-	}
-	Units struct {
-		Distance string
-	}
-	Details struct {
-		DriverLocationToPassengerStartDistance string
-		DriverLocationToPassengerStartDuration time.Duration
-		PassengerStartToPassengerEndDistance   string
-		PassengerStartToPassengerEndDuration   time.Duration
+	Coordinates Coordinates
+	Units       Units
+	Details     Details
+}
+
+// create Trip object w/ the Coordinates struct populated
+func NewTrip(PassengerStart string, PassengerEnd string, DriverLocation string, DistanceUnits string) *Trip {
+	return &Trip{
+		Coordinates: Coordinates{
+			PassengerStart: PassengerStart,
+			PassengerEnd:   PassengerEnd,
+		},
 	}
 }
 
-func NewTrip() *Trip {
+// create emtpy Trip object
+func NewEmptyTrip() *Trip {
 	return &Trip{}
 }
 

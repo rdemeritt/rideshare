@@ -10,6 +10,7 @@ type Args struct {
 	PassengerEnd string
 	DistanceUnits string
 	DriverLocation string
+	GRPCPort       string
 }
 
 func (a *Args) ParseCommandLineFlags() {
@@ -19,6 +20,7 @@ func (a *Args) ParseCommandLineFlags() {
 	flag.StringVar(&a.PassengerEnd, "end", "37.3352,-121.8811", "Ending coordinates")
 	flag.StringVar(&a.DistanceUnits, "units", "imperial", "Distance units (imperial, metric)")
 	flag.StringVar(&a.DriverLocation, "driver", "37.3352,-121.8811", "Driver coordinates")
+    flag.StringVar(&a.GRPCPort, "port", "", "gRPC server port")
 
 	// Parse command line flags
 	flag.Parse()
