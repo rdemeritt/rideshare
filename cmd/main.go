@@ -6,7 +6,7 @@ import (
 	"rideshare/gmapsclient"
 	"rideshare/servers"
 	logger "rideshare/log"
-	t "rideshare/trip"
+	trip "rideshare/trip"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -26,9 +26,9 @@ func main() {
 	// Check if the gRPC port is specified, if so, start the gRPC server
     if argv.GRPCPort != "" {
         // start the TripServer	service
-		tripServer := servers.NewTripServer()
+		// tripServer := servers.NewTripServer()
 		log.Debugf("Starting TripServer on port %s", argv.GRPCPort)
-		tripServer.StartTripServer(argv.GRPCPort)
+		servers.StartTripServer(argv.GRPCPort)
 
     } else {
 		// Create a new maps client
@@ -36,24 +36,24 @@ func main() {
 		common.Check(err)
 
 		// Create a new Trip object
-		trip := t.NewEmptyTrip()
+		t := trip.NewEmptyTrip()
 
 		// populate Trip object
-		trip.SetDistanceUnits(argv.DistanceUnits)
-		trip.SetPassengerStart(argv.PassengerStart)
-		trip.SetPassengerEnd(argv.PassengerEnd)
-		trip.SetDriverLocation(argv.DriverLocation)
+		t.SetDistanceUnits(argv.DistanceUnits)
+		t.SetPassengerStart(argv.PassengerStart)
+		t.SetPassengerEnd(argv.PassengerEnd)
+		t.SetDriverLocation(argv.DriverLocation)
 
 		// Get the distance matrix
-		fullTripMatrix, err := t.GetDistanceMatrix(client, trip.Coordinates.DriverLocation, trip.Coordinates.PassengerStart, trip.Coordinates.PassengerEnd, trip.Units.Distance)
+		fullTripMatrix, err := trip.GetDistanceMatrix(client, t.Coordinates.DriverLocation, t.Coordinates.PassengerStart, t.Coordinates.PassengerEnd, t.Units.Distance)
 		common.Check(err)
 		if logger.GetLogLevel() == "debug" {
-			t.PrintDistanceMatrix(fullTripMatrix)
+			trip.PrintDistanceMatrix(fullTripMatrix)
 		}
 		// 	// Populate the trip Details struct
-		trip.PopulateTripDetails(fullTripMatrix)
+		t.PopulateTripDetails(fullTripMatrix)
 
 		// Print the trip details
-		trip.PrintTripDetails()
+		t.PrintTripDetails()
 	}
 }
