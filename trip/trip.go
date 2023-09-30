@@ -9,11 +9,10 @@ import (
 	"googlemaps.github.io/maps"
 )
 
-
 type Coordinates struct {
 	PassengerStart string `json:"passenger_start"`
-    PassengerEnd   string `json:"passenger_end"`
-    DriverLocation string `json:"driver_location"`
+	PassengerEnd   string `json:"passenger_end"`
+	DriverLocation string `json:"driver_location"`
 }
 
 type Units struct {
@@ -21,25 +20,25 @@ type Units struct {
 }
 
 type Details struct {
-	DriverLocationToPassengerStartDistance string `json:"driver_location_to_passenger_start_distance"`
-    DriverLocationToPassengerStartDuration time.Duration `json:"driver_location_to_passenger_start_duration"`
-    PassengerStartToPassengerEndDistance   string `json:"passenger_start_to_passenger_end_distance"`
-    PassengerStartToPassengerEndDuration   time.Duration `json:"passenger_start_to_passenger_end_duration"`
+	DriverLocationToPassengerStartDistance string        `json:"driver_location_to_passenger_start_distance"`
+	DriverLocationToPassengerStartDuration time.Duration `json:"driver_location_to_passenger_start_duration"`
+	PassengerStartToPassengerEndDistance   string        `json:"passenger_start_to_passenger_end_distance"`
+	PassengerStartToPassengerEndDuration   time.Duration `json:"passenger_start_to_passenger_end_duration"`
 }
 
 type Trip struct {
 	Coordinates Coordinates `json:"coordinates"`
-	Units       Units `json:"units"`
-	Details     Details `json:"details"`
+	Units       Units       `json:"units"`
+	Details     Details     `json:"details"`
 }
 
 // convert Trip object to JSON
 func (t *Trip) ToJSON() (string, error) {
-    jsonBytes, err := json.Marshal(t)
-    if err != nil {
-        return "", err
-    }
-    return string(jsonBytes), nil
+	jsonBytes, err := json.Marshal(t)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonBytes), nil
 }
 
 // create Trip object w/ the Coordinates struct populated

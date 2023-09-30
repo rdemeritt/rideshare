@@ -38,7 +38,7 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 
 	// log the contents of req
 	log.Debugf("TripRequest: %v", req)
-	
+
 	// log the contents of request
 	log.Debugf("DistanceMatrixRequest: %v", request)
 

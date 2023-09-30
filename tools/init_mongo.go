@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	_ "rideshare/log"
 	"rideshare/common"
 	"rideshare/database"
+	_ "rideshare/log"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreateDatabaseCollection(client *mongo.Client, db string, collection string) error {
