@@ -5,7 +5,8 @@ option go_package = "/trip";
 
 import "google/protobuf/timestamp.proto";
 
-message TripRequest {
+message TripRequest
+{
   string id = 1;
   string passenger_start = 2;
   string passenger_end = 3;
@@ -15,27 +16,32 @@ message TripRequest {
   string status = 7;
 }
 
-message TripResponse {
+message TripResponse
+{
   string driver_location_to_passenger_start_distance = 1;
   string driver_location_to_passenger_start_duration = 2;
   string passenger_start_to_passenger_end_distance = 3;
   string passenger_start_to_passenger_end_duration = 4;
 }
 
-message NoInput {
+message NoInput
+{
 }
 
-message StringRequest {
+message StringRequest
+{
   string value = 1;
 }
 
-message StringResponse {
+message StringResponse
+{
   string value = 1;
 }
 
-service TripService {
-  rpc CalculateTripById(TripRequest) returns (TripResponse) {}
-  rpc CalculateNewTrip(TripRequest) returns (TripResponse) {}
-  rpc GetTimeInNYC(NoInput) returns (StringResponse) {}
-  rpc CreateTripRequest(TripRequest) returns (TripRequest) {}
+service TripService
+{
+  rpc CalculateTripById(TripRequest) returns (TripResponse) { }
+  rpc CalculateNewTrip(TripRequest) returns (TripResponse) { }
+  rpc GetTimeInNYC(NoInput) returns (StringResponse) { }
+  rpc CreateTripRequest(TripRequest) returns (TripRequest) { }
 }

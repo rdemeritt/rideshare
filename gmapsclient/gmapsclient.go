@@ -1,8 +1,8 @@
 package gmapsclient
 
 import (
-	"rideshare/common"
 	"googlemaps.github.io/maps"
+	"rideshare/common"
 )
 
 func NewMapsClient() (*maps.Client, error) {
