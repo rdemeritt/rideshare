@@ -23,7 +23,7 @@ func main() {
 	// set log_level
 	logger.SetLogLevel(argv.LogLevel)
 
-	// Check if the gRPC port is specified, if so, start the gRPC server
+	// Check if the gRPC port is specified
     if argv.GRPCPort != "" {
         // start the TripServer	service
 		// tripServer := servers.NewTripServer()
