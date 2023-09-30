@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	TripService_CalculateTripById_FullMethodName = "/rideshare.TripService/CalculateTripById"
 	TripService_CalculateNewTrip_FullMethodName  = "/rideshare.TripService/CalculateNewTrip"
 	TripService_GetTimeInNYC_FullMethodName      = "/rideshare.TripService/GetTimeInNYC"
 	TripService_CreateTripRequest_FullMethodName = "/rideshare.TripService/CreateTripRequest"
@@ -28,6 +29,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TripServiceClient interface {
+	CalculateTripById(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error)
 	CalculateNewTrip(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error)
 	GetTimeInNYC(ctx context.Context, in *NoInput, opts ...grpc.CallOption) (*StringResponse, error)
 	CreateTripRequest(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripRequest, error)
@@ -39,6 +41,15 @@ type tripServiceClient struct {
 
 func NewTripServiceClient(cc grpc.ClientConnInterface) TripServiceClient {
 	return &tripServiceClient{cc}
+}
+
+func (c *tripServiceClient) CalculateTripById(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error) {
+	out := new(TripResponse)
+	err := c.cc.Invoke(ctx, TripService_CalculateTripById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *tripServiceClient) CalculateNewTrip(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error) {
@@ -72,6 +83,7 @@ func (c *tripServiceClient) CreateTripRequest(ctx context.Context, in *TripReque
 // All implementations must embed UnimplementedTripServiceServer
 // for forward compatibility
 type TripServiceServer interface {
+	CalculateTripById(context.Context, *TripRequest) (*TripResponse, error)
 	CalculateNewTrip(context.Context, *TripRequest) (*TripResponse, error)
 	GetTimeInNYC(context.Context, *NoInput) (*StringResponse, error)
 	CreateTripRequest(context.Context, *TripRequest) (*TripRequest, error)
@@ -82,6 +94,9 @@ type TripServiceServer interface {
 type UnimplementedTripServiceServer struct {
 }
 
+func (UnimplementedTripServiceServer) CalculateTripById(context.Context, *TripRequest) (*TripResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CalculateTripById not implemented")
+}
 func (UnimplementedTripServiceServer) CalculateNewTrip(context.Context, *TripRequest) (*TripResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CalculateNewTrip not implemented")
 }
@@ -102,6 +117,24 @@ type UnsafeTripServiceServer interface {
 
 func RegisterTripServiceServer(s grpc.ServiceRegistrar, srv TripServiceServer) {
 	s.RegisterService(&TripService_ServiceDesc, srv)
+}
+
+func _TripService_CalculateTripById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TripRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TripServiceServer).CalculateTripById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TripService_CalculateTripById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TripServiceServer).CalculateTripById(ctx, req.(*TripRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _TripService_CalculateNewTrip_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -165,6 +198,10 @@ var TripService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "rideshare.TripService",
 	HandlerType: (*TripServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CalculateTripById",
+			Handler:    _TripService_CalculateTripById_Handler,
+		},
 		{
 			MethodName: "CalculateNewTrip",
 			Handler:    _TripService_CalculateNewTrip_Handler,

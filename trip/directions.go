@@ -64,6 +64,12 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 
 	SetUnits(req.DistanceUnits, request)
 
+	// log the contents of req
+	log.Debugf("TripRequest: %v", req)
+	
+	// log the contents of request
+	log.Debugf("DistanceMatrixRequest: %v", request)
+
 	// Send the distance matrix request
 	response, err := client.DistanceMatrix(context.Background(), request)
 	if err != nil {
