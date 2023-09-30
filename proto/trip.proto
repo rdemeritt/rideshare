@@ -3,11 +3,15 @@ syntax = "proto3";
 package rideshare;
 option go_package = "/trip";
 
+import "google/protobuf/timestamp.proto";
+
 message TripRequest {
-  string passenger_start = 1;
-  string passenger_end = 2;
-  string driver_location = 3;
-  string distance_units = 4;
+  string id = 1;
+  string passenger_start = 2;
+  string passenger_end = 3;
+  string driver_location = 4;
+  string distance_units = 5;
+  google.protobuf.Timestamp creationtime = 6;
 }
 
 message TripResponse {
