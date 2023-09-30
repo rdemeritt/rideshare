@@ -27,7 +27,7 @@ func main() {
     if argv.GRPCPort != "" {
         // start the TripServer	service
 		// tripServer := servers.NewTripServer()
-		log.Debugf("Starting TripServer on port %s", argv.GRPCPort)
+		log.Infof("Starting TripServer on port %s", argv.GRPCPort)
 		servers.StartTripServer(argv.GRPCPort)
 
     } else {

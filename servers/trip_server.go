@@ -31,7 +31,7 @@ func StartTripServer(port string) {
 	trippb.RegisterTripServiceServer(grpcServer, &server{})
 
 	// Start the gRPC server
-	log.Debugf("Starting gRPC server on port %s", port)
+	log.Infof("Starting gRPC server on port %s", port)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
@@ -59,7 +59,7 @@ func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest)
 }
 
 func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
-    log.Debug("CalculateTripById start")
+    log.Info("CalculateTripById start")
     log.Debugf("CalculateTripById request: %v", req)
     // get TripRequest from mongodb
     client, _err := database.ConnectToMongoDB("localhost", "27017", "root", "Password1!")
@@ -86,7 +86,7 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	common.Check(err)
 
 	t.PopulateTripDetails(dmr)
-    defer log.Debug("CalculateTripById end")
+    defer log.Info("CalculateTripById end")
 
 	// Create a new TripResponse object
 	return &trippb.TripResponse{
