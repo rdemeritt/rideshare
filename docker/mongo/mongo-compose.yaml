@@ -1,0 +1,21 @@
+services:
+  
+  mongo:
+    image: rideshare-mongodb:latest
+    build:
+      context: .
+    ports:
+      - 27017:27017
+    container_name: rideshare_mongo
+    volumes:
+        - mongodb_data:/data
+    networks:
+      - rideshare-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  rideshare-network:
+    ipam:
+      driver: default
