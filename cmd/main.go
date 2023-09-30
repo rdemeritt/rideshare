@@ -50,7 +50,8 @@ func main() {
 		if logger.GetLogLevel() == "debug" {
 			trip.PrintDistanceMatrix(fullTripMatrix)
 		}
-		// 	// Populate the trip Details struct
+		
+		// Populate the trip Details struct
 		t.PopulateTripDetails(fullTripMatrix)
 
 		// Print the trip details
