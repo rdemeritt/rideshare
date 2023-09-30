@@ -15,7 +15,7 @@ import (
 )
 
 func ConnectToMongoDB(host string, port string, user string, pass string) (*mongo.Client, error) {
-	log.Debug("ConnectToMongoDB start")
+	log.Info("ConnectToMongoDB start")
 	// Set client options
 	clientOptions := options.Client().ApplyURI("mongodb://"+user+":"+pass+"@"+host+":"+port)
 
@@ -26,13 +26,13 @@ func ConnectToMongoDB(host string, port string, user string, pass string) (*mong
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to MongoDB: %v", err)
 	}
-	defer log.Debug("ConnectToMongoDB end")
+	defer log.Info("ConnectToMongoDB end")
 
 	return client, nil
 }
 
 func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
-	log.Debug("InsertTripRequest start")
+	log.Info("InsertTripRequest start")
 	// Insert a new TripRequest entry into the rideshare database and trips collection
 	collection := client.Database("rideshare").Collection("trips")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -50,12 +50,13 @@ func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
 		log.Warnf("failed to insert TripRequest into MongoDB: %v", err)
 		return err
 	}
-	defer log.Debug("InsertTripRequest end")
+	defer log.Info("InsertTripRequest end")
 	
 	return nil
 }
 
 func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, error) {
+	log.Info("GetTripRequestByID start")
     // Get the trips collection
     collection := client.Database("rideshare").Collection("trips")
 
@@ -66,6 +67,7 @@ func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, e
     if err != nil {
         return nil, fmt.Errorf("failed to find trip with ID %s: %v", id, err)
     }
-
+	defer log.Info("GetTripRequestByID end")
+	
     return &tripRequest, nil
 }
