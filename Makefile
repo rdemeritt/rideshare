@@ -1,4 +1,4 @@
-.PHONY: protoc
+.PHONY: all test trip_proto run_trip_server protoc clean
 
 all: protoc
 
@@ -12,3 +12,7 @@ run_trip_server:
 
 clean:
 	find proto -name "*.pb.go" -type f -delete
+
+test:
+	cd test; \
+	go test
