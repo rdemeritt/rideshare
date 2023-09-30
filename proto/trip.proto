@@ -27,4 +27,5 @@ message StringResponse {
 service TripService {
   rpc CalculateNewTrip(TripRequest) returns (TripResponse) {}
   rpc GetTimeInNYC(NoInput) returns (StringResponse) {}
+  rpc CreateTripRequest(TripRequest) returns (TripRequest) {}
 }
