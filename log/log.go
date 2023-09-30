@@ -1,8 +1,8 @@
 package log
 
 import (
-	"os"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 func InitLog() {
@@ -20,16 +20,16 @@ func SetLogLevel(logLevel string) {
 	log.SetOutput(os.Stdout)
 
 	switch logLevel {
-		case "debug":
-			log.SetLevel(log.DebugLevel)
-		case "info":
-			log.SetLevel(log.InfoLevel)
-		case "warn":
-			log.SetLevel(log.WarnLevel)
-		case "error":
-			log.SetLevel(log.ErrorLevel)
-		default:
-			log.Fatalf("Invalid logging level: %s", logLevel)
+	case "debug":
+		log.SetLevel(log.DebugLevel)
+	case "info":
+		log.SetLevel(log.InfoLevel)
+	case "warn":
+		log.SetLevel(log.WarnLevel)
+	case "error":
+		log.SetLevel(log.ErrorLevel)
+	default:
+		log.Fatalf("Invalid logging level: %s", logLevel)
 	}
 }
 
