@@ -1,3 +1,4 @@
 go.mod
 go.sum
 logs.txt
+.DS_Store
