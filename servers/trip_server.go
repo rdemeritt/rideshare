@@ -5,12 +5,11 @@ import (
 	"net"
 	"rideshare/common"
 	"rideshare/gmapsclient"
+    "rideshare/database"
 	trippb "rideshare/proto/trip"
 	trip "rideshare/trip"
 	"time"
-
 	log "github.com/sirupsen/logrus"
-
 	"google.golang.org/grpc"
 )
 
@@ -42,6 +41,20 @@ func StartTripServer(port string) {
 func (s *server) GetTimeInNYC(ctx context.Context, _ *trippb.NoInput) (*trippb.StringResponse, error) {
 	log.Debugf("GetTime request")
 	return &trippb.StringResponse{Value: time.Now().Local().String()}, nil
+}
+
+// take a new TripRequest and insert a new TripRequest entry, containing only the PassengerStart and PassengerEnd values, into the mongodb database
+func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
+    log.Debugf("InsertTripRequest request: %v", req)
+
+    // connect to mongodb
+    client, err := database.ConnectToMongoDB("myUserAdmin", "Password1!", "localhost", "27017")
+    common.Check(err)
+
+    // insert a new TripRequest entry into the rideshare database and trips collection
+    err = database.InsertTripRequest(client, req)
+
+    return req, err
 }
 
 func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {

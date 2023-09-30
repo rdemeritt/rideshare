@@ -16,3 +16,9 @@ clean:
 test:
 	cd test; \
 	go test
+
+mongo:
+	docker build -t rideshare-mongodb .
+
+run_mongodb:
+	docker run -d -p 27017:27017 --name rideshare-mongodb rideshare-mongodb
