@@ -12,6 +12,7 @@ message TripRequest {
   string driver_location = 4;
   string distance_units = 5;
   google.protobuf.Timestamp creationtime = 6;
+  string status = 7;
 }
 
 message TripResponse {
