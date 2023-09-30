@@ -6,8 +6,9 @@ import (
 	trippb "rideshare/proto/trip"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -52,4 +53,19 @@ func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
 	defer log.Debug("InsertTripRequest end")
 	
 	return nil
+}
+
+func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, error) {
+    // Get the trips collection
+    collection := client.Database("rideshare").Collection("trips")
+
+    // Query for the trip with the given ID
+    filter := bson.M{"id": id}
+    var tripRequest trippb.TripRequest
+    err := collection.FindOne(context.Background(), filter).Decode(&tripRequest)
+    if err != nil {
+        return nil, fmt.Errorf("failed to find trip with ID %s: %v", id, err)
+    }
+
+    return &tripRequest, nil
 }
