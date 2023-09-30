@@ -43,7 +43,7 @@ func (t *Trip) ToJSON() (string, error) {
 }
 
 // create Trip object w/ the Coordinates struct populated
-func NewTrip(PassengerStart string, PassengerEnd string, DriverLocation string, DistanceUnits string) *Trip {
+func NewTrip(PassengerStart string, PassengerEnd string) *Trip {
 	return &Trip{
 		Coordinates: Coordinates{
 			PassengerStart: PassengerStart,

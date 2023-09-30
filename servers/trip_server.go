@@ -43,7 +43,8 @@ func (s *server) GetTimeInNYC(ctx context.Context, _ *trippb.NoInput) (*trippb.S
 	return &trippb.StringResponse{Value: time.Now().Local().String()}, nil
 }
 
-// take a new TripRequest and insert a new TripRequest entry, containing only the PassengerStart and PassengerEnd values, into the mongodb database
+// take a new TripRequest and insert a new TripRequest entry, containing only the PassengerStart and PassengerEnd values,
+// into the mongodb database
 func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
     log.Debugf("InsertTripRequest request: %v", req)
 
@@ -60,7 +61,7 @@ func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest)
 func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
 	log.Debugf("CalculateNewTrip request: %v", req)
 	// Create a new Trip object
-	t := trip.NewTrip(req.PassengerStart, req.PassengerEnd, req.DriverLocation, req.DistanceUnits)
+	t := trip.NewTrip(req.PassengerStart, req.PassengerEnd)
 
 	// Create a new maps client
 	client, err := gmapsclient.NewMapsClient()
