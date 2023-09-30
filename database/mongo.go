@@ -14,19 +14,31 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func GetMongoDBClient() (*mongo.Client, error ){
+	client, err := ConnectToMongoDB("localhost", "27017", "root", "Password1!")
+	if err != nil {
+		log.Errorf("failed to connect to MongoDB: %v", err)
+		return nil, err
+	}
+
+	return client, nil
+}
+
 func ConnectToMongoDB(host string, port string, user string, pass string) (*mongo.Client, error) {
 	log.Info("ConnectToMongoDB start")
+	defer log.Info("ConnectToMongoDB end")
+
 	// Set client options
 	clientOptions := options.Client().ApplyURI("mongodb://"+user+":"+pass+"@"+host+":"+port)
 
 	// Connect to MongoDB
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to MongoDB: %v", err)
 	}
-	defer log.Info("ConnectToMongoDB end")
 
 	return client, nil
 }
@@ -68,6 +80,6 @@ func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, e
         return nil, fmt.Errorf("failed to find trip with ID %s: %v", id, err)
     }
 	defer log.Info("GetTripRequestByID end")
-	
+
     return &tripRequest, nil
 }

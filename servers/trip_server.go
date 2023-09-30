@@ -18,6 +18,9 @@ type server struct {
 }
 
 func StartTripServer(port string) {
+    log.Info("StartTripServer start")
+    defer log.Info("StartTripServer end")
+
 	// Listen on the specified port
 	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
@@ -31,7 +34,7 @@ func StartTripServer(port string) {
 	trippb.RegisterTripServiceServer(grpcServer, &server{})
 
 	// Start the gRPC server
-	log.Infof("Starting gRPC server on port %s", port)
+	log.Debugf("Starting gRPC server on port %s", port)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
@@ -46,13 +49,16 @@ func (s *server) GetTimeInNYC(ctx context.Context, _ *trippb.NoInput) (*trippb.S
 // take a new TripRequest and insert a new TripRequest entry, containing only the PassengerStart and PassengerEnd values,
 // into the mongodb database
 func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
-    log.Debugf("InsertTripRequest request: %v", req)
-
+    log.Info("CreateTripRequest start")
+    defer log.Info("CreateTripRequest end")
+    // set the status to pending
+    req.Status = "pending"
     // connect to mongodb
-    client, err := database.ConnectToMongoDB("localhost", "27017", "root", "Password1!")
+    client, err := database.GetMongoDBClient()
     common.Check(err)
 
     // insert a new TripRequest entry into the rideshare database and trips collection
+    log.Debugf("InsertTripRequest request: %v", req)
     err = database.InsertTripRequest(client, req)
 
     return req, err
@@ -60,10 +66,11 @@ func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest)
 
 func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
     log.Info("CalculateTripById start")
+    defer log.Info("CalculateTripById end")
     log.Debugf("CalculateTripById request: %v", req)
     // get TripRequest from mongodb
-    client, _err := database.ConnectToMongoDB("localhost", "27017", "root", "Password1!")
-    common.Check(_err)
+    client, err := database.GetMongoDBClient()
+    common.Check(err)
 
     tripRequest, err := database.GetTripRequestByID(client, req.Id)
     if err != nil {
@@ -84,9 +91,7 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
     
     dmr, err := trip.GetTripRequestDistanceMatrix(gMapsClient, tripRequest)
 	common.Check(err)
-
 	t.PopulateTripDetails(dmr)
-    defer log.Info("CalculateTripById end")
 
 	// Create a new TripResponse object
 	return &trippb.TripResponse{
