@@ -23,7 +23,7 @@ func main() {
 	// set log_level
 	logger.SetLogLevel(argv.LogLevel)
 
-	// Check if the gRPC port is specified
+    // Check if the gRPC port is specified
     if argv.GRPCPort != "" {
         // start the TripServer	service
 		// tripServer := servers.NewTripServer()
@@ -50,7 +50,7 @@ func main() {
 		if logger.GetLogLevel() == "debug" {
 			trip.PrintDistanceMatrix(fullTripMatrix)
 		}
-		
+
 		// Populate the trip Details struct
 		t.PopulateTripDetails(fullTripMatrix)
 
