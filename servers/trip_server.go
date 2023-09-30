@@ -58,6 +58,46 @@ func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest)
     return req, err
 }
 
+func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
+    log.Debug("CalculateTripById start")
+    log.Debugf("CalculateTripById request: %v", req)
+    // get TripRequest from mongodb
+    client, _err := database.ConnectToMongoDB("localhost", "27017", "root", "Password1!")
+    common.Check(_err)
+
+    tripRequest, err := database.GetTripRequestByID(client, req.Id)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Create a new Trip object
+	t := trip.NewTrip(req.PassengerStart, req.PassengerEnd)
+
+    // Create a new maps client
+	gMapsClient, err := gmapsclient.NewMapsClient()
+	common.Check(err)
+
+    // set the distance units
+    tripRequest.DistanceUnits = req.DistanceUnits
+    // set driver location
+    tripRequest.DriverLocation = req.DriverLocation
+    
+    dmr, err := trip.GetTripRequestDistanceMatrix(gMapsClient, tripRequest)
+	common.Check(err)
+
+	t.PopulateTripDetails(dmr)
+    defer log.Debug("CalculateTripById end")
+
+	// Create a new TripResponse object
+	return &trippb.TripResponse{
+		PassengerStartToPassengerEndDistance:   t.Details.PassengerStartToPassengerEndDistance,
+		PassengerStartToPassengerEndDuration:   t.Details.PassengerStartToPassengerEndDuration.String(),
+		DriverLocationToPassengerStartDistance: t.Details.DriverLocationToPassengerStartDistance,
+		DriverLocationToPassengerStartDuration: t.Details.DriverLocationToPassengerStartDuration.String(),
+	}, nil
+}
+
+
 func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
 	log.Debugf("CalculateNewTrip request: %v", req)
 	// Create a new Trip object
