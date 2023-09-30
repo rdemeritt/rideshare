@@ -48,7 +48,7 @@ func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest)
     log.Debugf("InsertTripRequest request: %v", req)
 
     // connect to mongodb
-    client, err := database.ConnectToMongoDB("myUserAdmin", "Password1!", "localhost", "27017")
+    client, err := database.ConnectToMongoDB("localhost", "27017", "root", "Password1!")
     common.Check(err)
 
     // insert a new TripRequest entry into the rideshare database and trips collection
