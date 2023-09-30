@@ -2,30 +2,44 @@ package main
 
 import (
 	"context"
-	"fmt"
+	_ "rideshare/log"
+	"rideshare/common"
 	"rideshare/database"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	log "github.com/sirupsen/logrus"
 )
 
-func createRideshareTripsDatabase(user string, pass string, host string, port string) error {
-	// Connect to MongoDB
-	client, err := database.ConnectToMongoDB(user, pass, host, port)
-	if err != nil {
-		return fmt.Errorf("failed to connect to MongoDB: %v", err)
-	}
-	defer client.Disconnect(context.Background())
+func CreateDatabaseCollection(client *mongo.Client, db string, collection string) error {
+	// Create the database and collection
+	common.Check(client.Database(db).CreateCollection(context.Background(), collection))
+	log.Debugf("Created %s collection in %s database\n", collection, db)
 
-	// Create the rideshare_trips database
-	err = client.Database("rideshare").CreateCollection(context.Background(), "trips")
-	if err != nil {
-		return fmt.Errorf("failed to create rideshare_trips database: %v", err)
-	}
+	return nil
+}
+
+func CreateMongoUser(client *mongo.Client, db string, user string, pass string, role string) error {
+	log.Infof("CreateMongoUser start")
+	// Create the user
+	common.Check(client.Database(db).RunCommand(context.Background(), map[string]interface{}{
+		"createUser": user,
+		"pwd":        pass,
+		"roles": []map[string]string{
+			{"role": role, "db": db},
+		},
+	}).Err())
+
+	defer log.Infof("CreateMongoUser end")
+	log.Debugf("Created %s user in %s database\n", user, db)
 
 	return nil
 }
 
 func main() {
-	err := createRideshareTripsDatabase("myUserAdmin", "Password1!", "localhost", "27017")
-	if err != nil {
-		fmt.Println(err)
-	}
+	client, err := database.ConnectToMongoDB("localhost", "27017", "root", "Password1!")
+	common.Check(err)
+	defer client.Disconnect(context.Background())
+
+	common.Check(CreateDatabaseCollection(client, "rideshare", "trips"))
+	// common.Check(CreateMongoUser(client, "rideshare", "rideshare_admin", "Password1!", "readWrite"))
 }
