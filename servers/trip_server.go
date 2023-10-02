@@ -51,11 +51,13 @@ func (s *server) GetTimeInNYC(ctx context.Context, _ *trippb.NoInput) (*trippb.S
 func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
 	log.Info("CreateTripRequest start")
 	defer log.Info("CreateTripRequest end")
+    
 	// set the status to pending
 	req.Status = "pending"
 	// connect to mongodb
 	client, err := database.GetMongoDBClient()
 	common.Check(err)
+    defer client.Disconnect(ctx)
 
 	// insert a new TripRequest entry into the rideshare database and trips collection
 	log.Debugf("InsertTripRequest request: %v", req)
@@ -68,9 +70,11 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	log.Info("CalculateTripById start")
 	defer log.Info("CalculateTripById end")
 	log.Debugf("CalculateTripById request: %v", req)
+
 	// get TripRequest from mongodb
 	client, err := database.GetMongoDBClient()
 	common.Check(err)
+    defer client.Disconnect(ctx)
 
 	tripRequest, err := database.GetTripRequestByID(client, req.Id)
 	if err != nil {
@@ -102,6 +106,17 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	}, nil
 }
 
+func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsByProximityRequest) (*trippb.GetTripsByProximityResponse, error) {
+    // get mongo client
+    client, err := database.GetMongoDBClient()
+    common.Check(err)
+    defer client.Disconnect(ctx)
+
+    trip.GetTripsInProximity(client, req.DriverLocation, req.Distance)
+
+    return &trippb.GetTripsByProximityResponse{}, nil
+}
+
 func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
 	log.Debugf("CalculateNewTrip request: %v", req)
 	// Create a new Trip object
@@ -111,7 +126,7 @@ func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) 
 	client, err := gmapsclient.NewMapsClient()
 	common.Check(err)
 
-	dmr, err := trip.GetTripRequestDistanceMatrix(client, req)
+    dmr, err := trip.GetTripRequestDistanceMatrix(client, req)
 	common.Check(err)
 
 	t.PopulateTripDetails(dmr)
