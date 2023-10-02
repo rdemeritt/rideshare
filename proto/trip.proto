@@ -24,6 +24,18 @@ message TripResponse
   string passenger_start_to_passenger_end_duration = 4;
 }
 
+message GetTripsByProximityRequest
+{
+  string driver_location = 1;
+  string distance = 2;
+}
+
+message GetTripsByProximityResponse
+{
+  repeated string ids = 1;
+  repeated TripResponse trips = 2;
+}
+
 message NoInput
 {
 }
@@ -44,4 +56,5 @@ service TripService
   rpc CalculateNewTrip(TripRequest) returns (TripResponse) { }
   rpc GetTimeInNYC(NoInput) returns (StringResponse) { }
   rpc CreateTripRequest(TripRequest) returns (TripRequest) { }
+  rpc GetTripsByProximity(GetTripsByProximityRequest) returns (GetTripsByProximityResponse) { }
 }
