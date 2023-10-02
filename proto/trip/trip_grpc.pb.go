@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	TripService_CalculateTripById_FullMethodName = "/rideshare.TripService/CalculateTripById"
-	TripService_CalculateNewTrip_FullMethodName  = "/rideshare.TripService/CalculateNewTrip"
-	TripService_GetTimeInNYC_FullMethodName      = "/rideshare.TripService/GetTimeInNYC"
-	TripService_CreateTripRequest_FullMethodName = "/rideshare.TripService/CreateTripRequest"
+	TripService_CalculateTripById_FullMethodName   = "/rideshare.TripService/CalculateTripById"
+	TripService_CalculateNewTrip_FullMethodName    = "/rideshare.TripService/CalculateNewTrip"
+	TripService_GetTimeInNYC_FullMethodName        = "/rideshare.TripService/GetTimeInNYC"
+	TripService_CreateTripRequest_FullMethodName   = "/rideshare.TripService/CreateTripRequest"
+	TripService_GetTripsByProximity_FullMethodName = "/rideshare.TripService/GetTripsByProximity"
 )
 
 // TripServiceClient is the client API for TripService service.
@@ -33,6 +34,7 @@ type TripServiceClient interface {
 	CalculateNewTrip(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error)
 	GetTimeInNYC(ctx context.Context, in *NoInput, opts ...grpc.CallOption) (*StringResponse, error)
 	CreateTripRequest(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripRequest, error)
+	GetTripsByProximity(ctx context.Context, in *GetTripsByProximityRequest, opts ...grpc.CallOption) (*GetTripsByProximityResponse, error)
 }
 
 type tripServiceClient struct {
@@ -79,6 +81,15 @@ func (c *tripServiceClient) CreateTripRequest(ctx context.Context, in *TripReque
 	return out, nil
 }
 
+func (c *tripServiceClient) GetTripsByProximity(ctx context.Context, in *GetTripsByProximityRequest, opts ...grpc.CallOption) (*GetTripsByProximityResponse, error) {
+	out := new(GetTripsByProximityResponse)
+	err := c.cc.Invoke(ctx, TripService_GetTripsByProximity_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TripServiceServer is the server API for TripService service.
 // All implementations must embed UnimplementedTripServiceServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type TripServiceServer interface {
 	CalculateNewTrip(context.Context, *TripRequest) (*TripResponse, error)
 	GetTimeInNYC(context.Context, *NoInput) (*StringResponse, error)
 	CreateTripRequest(context.Context, *TripRequest) (*TripRequest, error)
+	GetTripsByProximity(context.Context, *GetTripsByProximityRequest) (*GetTripsByProximityResponse, error)
 	mustEmbedUnimplementedTripServiceServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedTripServiceServer) GetTimeInNYC(context.Context, *NoInput) (*
 }
 func (UnimplementedTripServiceServer) CreateTripRequest(context.Context, *TripRequest) (*TripRequest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTripRequest not implemented")
+}
+func (UnimplementedTripServiceServer) GetTripsByProximity(context.Context, *GetTripsByProximityRequest) (*GetTripsByProximityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTripsByProximity not implemented")
 }
 func (UnimplementedTripServiceServer) mustEmbedUnimplementedTripServiceServer() {}
 
@@ -191,6 +206,24 @@ func _TripService_CreateTripRequest_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TripService_GetTripsByProximity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTripsByProximityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TripServiceServer).GetTripsByProximity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TripService_GetTripsByProximity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TripServiceServer).GetTripsByProximity(ctx, req.(*GetTripsByProximityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TripService_ServiceDesc is the grpc.ServiceDesc for TripService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var TripService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateTripRequest",
 			Handler:    _TripService_CreateTripRequest_Handler,
+		},
+		{
+			MethodName: "GetTripsByProximity",
+			Handler:    _TripService_GetTripsByProximity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
