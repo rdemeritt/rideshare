@@ -2,15 +2,15 @@ package servers
 
 import (
 	"context"
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 	"net"
 	"rideshare/common"
+	"rideshare/database"
 	"rideshare/gmapsclient"
-    "rideshare/database"
 	trippb "rideshare/proto/trip"
 	trip "rideshare/trip"
 	"time"
-	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 )
 
 type server struct {
@@ -18,8 +18,8 @@ type server struct {
 }
 
 func StartTripServer(port string) {
-    log.Info("StartTripServer start")
-    defer log.Info("StartTripServer end")
+	log.Info("StartTripServer start")
+	defer log.Info("StartTripServer end")
 
 	// Listen on the specified port
 	lis, err := net.Listen("tcp", ":"+port)
@@ -49,47 +49,51 @@ func (s *server) GetTimeInNYC(ctx context.Context, _ *trippb.NoInput) (*trippb.S
 // take a new TripRequest and insert a new TripRequest entry, containing only the PassengerStart and PassengerEnd values,
 // into the mongodb database
 func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
-    log.Info("CreateTripRequest start")
-    defer log.Info("CreateTripRequest end")
-    // set the status to pending
-    req.Status = "pending"
-    // connect to mongodb
-    client, err := database.GetMongoDBClient()
-    common.Check(err)
+	log.Info("CreateTripRequest start")
+	defer log.Info("CreateTripRequest end")
 
-    // insert a new TripRequest entry into the rideshare database and trips collection
-    log.Debugf("InsertTripRequest request: %v", req)
-    err = database.InsertTripRequest(client, req)
+	// set the status to pending
+	req.Status = "pending"
+	// connect to mongodb
+	client, err := database.GetMongoDBClient()
+	common.Check(err)
+    defer client.Disconnect(ctx)
 
-    return req, err
+	// insert a new TripRequest entry into the rideshare database and trips collection
+	log.Debugf("InsertTripRequest request: %v", req)
+	err = database.InsertTripRequest(client, req)
+
+	return req, err
 }
 
 func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
-    log.Info("CalculateTripById start")
-    defer log.Info("CalculateTripById end")
-    log.Debugf("CalculateTripById request: %v", req)
-    // get TripRequest from mongodb
-    client, err := database.GetMongoDBClient()
-    common.Check(err)
+	log.Info("CalculateTripById start")
+	defer log.Info("CalculateTripById end")
+	log.Debugf("CalculateTripById request: %v", req)
 
-    tripRequest, err := database.GetTripRequestByID(client, req.Id)
-    if err != nil {
-        return nil, err
-    }
-    
-    // Create a new Trip object
+	// get TripRequest from mongodb
+	client, err := database.GetMongoDBClient()
+	common.Check(err)
+    defer client.Disconnect(ctx)
+
+	tripRequest, err := database.GetTripRequestByID(client, req.TripId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a new Trip object
 	t := trip.NewTrip(req.PassengerStart, req.PassengerEnd)
 
-    // Create a new maps client
+	// Create a new maps client
 	gMapsClient, err := gmapsclient.NewMapsClient()
 	common.Check(err)
 
-    // set the distance units
-    tripRequest.DistanceUnits = req.DistanceUnits
-    // set driver location
-    tripRequest.DriverLocation = req.DriverLocation
-    
-    dmr, err := trip.GetTripRequestDistanceMatrix(gMapsClient, tripRequest)
+	// set the distance units
+	tripRequest.DistanceUnits = req.DistanceUnits
+	// set driver location
+	tripRequest.DriverLocation = req.DriverLocation
+
+	dmr, err := trip.GetTripRequestDistanceMatrix(gMapsClient, tripRequest)
 	common.Check(err)
 	t.PopulateTripDetails(dmr)
 
@@ -102,6 +106,16 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	}, nil
 }
 
+func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsByProximityRequest) (*trippb.GetTripsByProximityResponse, error) {
+    // get mongo client
+    client, err := database.GetMongoDBClient()
+    common.Check(err)
+    defer client.Disconnect(ctx)
+
+    trip.GetTripsInProximity(client, req.DriverLocation, req.Distance, req.DistanceUnits)
+
+    return &trippb.GetTripsByProximityResponse{}, nil
+}
 
 func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
 	log.Debugf("CalculateNewTrip request: %v", req)
@@ -112,7 +126,7 @@ func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) 
 	client, err := gmapsclient.NewMapsClient()
 	common.Check(err)
 
-	dmr, err := trip.GetTripRequestDistanceMatrix(client, req)
+    dmr, err := trip.GetTripRequestDistanceMatrix(client, req)
 	common.Check(err)
 
 	t.PopulateTripDetails(dmr)

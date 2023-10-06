@@ -3,7 +3,7 @@ package trip
 import (
 	"context"
 	"fmt"
-	
+
 	"googlemaps.github.io/maps"
 )
 
@@ -33,4 +33,3 @@ func GetDirections(client *maps.Client, start string, end string) ([]maps.Route,
 
 	return routes, nil
 }
-
