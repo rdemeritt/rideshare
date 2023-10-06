@@ -1,5 +1,4 @@
 services:
-  
   mongo:
     image: rideshare-mongodb:latest
     build:
@@ -8,7 +7,7 @@ services:
       - 27017:27017
     container_name: rideshare_mongo
     volumes:
-        - mongo_data_db:/data/db
+      - mongo_data_db:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=Password1!

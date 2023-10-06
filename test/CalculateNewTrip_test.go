@@ -23,12 +23,11 @@ func TestCalculateNewTrip(t *testing.T) {
 
 	// Create a new TripRequest object
 	req := &trippb.TripRequest{
-			PassengerStart: "10330 shallowford rd, roswell,ga",
-			PassengerEnd:   "homedepot 30075",
-			DriverLocation: "brusters woodstock rd, roswell,ga",
-			DistanceUnits: "imperial",
-		}
-
+		PassengerStart: "10330 shallowford rd, roswell,ga",
+		PassengerEnd:   "homedepot 30075",
+		DriverLocation: "brusters woodstock rd, roswell,ga",
+		DistanceUnits:  "imperial",
+	}
 
 	// Call the CalculateNewTrip service
 	resp, err := client.CalculateNewTrip(context.Background(), req)
