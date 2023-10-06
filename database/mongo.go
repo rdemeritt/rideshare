@@ -85,7 +85,7 @@ func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, e
 	return &tripRequest, nil
 }
 
-func GetPendingTrips(client *mongo.Client, results *[]*trippb.PendingTrips) (error) {
+func GetPendingTrips(client *mongo.Client, results *[]*trippb.PendingTrip) (error) {
 	log.Info("GetPendingTrips start")
 	// Get the trips collection
 	collection := client.Database("rideshare").Collection("trips")
@@ -100,7 +100,8 @@ func GetPendingTrips(client *mongo.Client, results *[]*trippb.PendingTrips) (err
 	}
 	log.Debugf("GetPendingTrips cursor: %v", cursor)
 
-	if err = cursor.All(ctx, results); err != nil {
+	err = cursor.All(ctx, results)
+	if err != nil {
 		return fmt.Errorf("failed to decode MongoDB cursor: %v", err)
 	}
 	log.Debugf("GetPendingTrips results: %v", results)
