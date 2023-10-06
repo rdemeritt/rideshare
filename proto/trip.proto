@@ -5,37 +5,69 @@ option go_package = "/trip";
 
 import "google/protobuf/timestamp.proto";
 
-message TripRequest {
-  string id = 1;
-  string passenger_start = 2;
-  string passenger_end = 3;
-  string driver_location = 4;
-  string distance_units = 5;
+message TripRequest
+{
+  string trip_id = 1;
+  string passenger_start = 2 [json_name = "passengerstart"];
+  string passenger_end = 3 [json_name = "passengerend"];
+  string driver_location = 4 [json_name = "driverlocation"];
+  string distance_units = 5 [json_name = "distanceunits"];
   google.protobuf.Timestamp creationtime = 6;
   string status = 7;
 }
 
-message TripResponse {
+message TripResponse
+{
   string driver_location_to_passenger_start_distance = 1;
   string driver_location_to_passenger_start_duration = 2;
   string passenger_start_to_passenger_end_distance = 3;
   string passenger_start_to_passenger_end_duration = 4;
 }
 
-message NoInput {
+message PendingTrips
+{
+  string _id = 1;
+  string trip_id = 2;
+  string passenger_start = 3 [json_name = "passengerstart"];
+  string passenger_end = 4 [json_name = "passengerend"];
+  string driver_location = 5 [json_name = "driverlocation"];
+  string distance_units = 6 [json_name = "distanceunits"];
+  google.protobuf.Timestamp creationtime = 7;
+  string status = 8;
 }
 
-message StringRequest {
+message GetTripsByProximityRequest
+{
+  string driver_location = 1;
+  string distance = 2;
+  string distance_units = 3;
+}
+
+message GetTripsByProximityResponse
+{
+  repeated string ids = 1;
+  repeated TripResponse trips = 2;
+}
+
+message NoInput
+{
+}
+
+message StringRequest
+{
   string value = 1;
 }
 
-message StringResponse {
+message StringResponse
+{
   string value = 1;
 }
 
-service TripService {
-  rpc CalculateTripById(TripRequest) returns (TripResponse) {}
-  rpc CalculateNewTrip(TripRequest) returns (TripResponse) {}
-  rpc GetTimeInNYC(NoInput) returns (StringResponse) {}
-  rpc CreateTripRequest(TripRequest) returns (TripRequest) {}
+service TripService
+{
+  rpc CalculateTripById(TripRequest) returns (TripResponse) { }
+  rpc CalculateNewTrip(TripRequest) returns (TripResponse) { }
+  rpc GetTimeInNYC(NoInput) returns (StringResponse) { }
+  rpc CreateTripRequest(TripRequest) returns (TripRequest) { }
+  rpc GetTripsByProximity(GetTripsByProximityRequest) returns (GetTripsByProximityResponse) { }
 }
