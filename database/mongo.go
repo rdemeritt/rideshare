@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	trippb "rideshare/proto/trip"
 	"time"
@@ -52,7 +51,7 @@ func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
 	defer cancel()
 
 	// set uuid
-	req.Id = uuid.New().String()
+	req.TripId = uuid.New().String()
 	// set creationtime
 	req.Creationtime = timestamppb.Now()
 	log.Debugf(req.String())
@@ -86,23 +85,24 @@ func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, e
 	return &tripRequest, nil
 }
 
-func BsonMToJson(m bson.M) ([]byte, error) {
-    // Convert the bson.M object to a map[string]interface{}
-    var data map[string]interface{}
-    bytes, err := bson.Marshal(m)
-    if err != nil {
-        return nil, err
-    }
-    err = bson.Unmarshal(bytes, &data)
-    if err != nil {
-        return nil, err
-    }
+func GetPendingTrips(client *mongo.Client, results trippb.PendingTrips) (error) {
+	log.Info("GetPendingTrips start")
+	// Get the trips collection
+	collection := client.Database("rideshare").Collection("trips")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-    // Convert the map to JSON
-    jsonBytes, err := json.Marshal(data)
-    if err != nil {
-        return nil, err
-    }
+	// Query for the trip with the given ID
+	filter := bson.M{"status": "pending"}
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return fmt.Errorf("failed to find pending trips: %v", err)
+	}
 
-    return jsonBytes, nil
+	if err = cursor.All(ctx, &results); err != nil {
+		return fmt.Errorf("failed to decode MongoDB cursor: %v", err)
+	}
+	defer log.Info("GetPendingTrips end")
+
+	return nil
 }
