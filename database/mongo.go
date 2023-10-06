@@ -85,7 +85,7 @@ func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, e
 	return &tripRequest, nil
 }
 
-func GetPendingTrips(client *mongo.Client, results trippb.PendingTrips) (error) {
+func GetPendingTrips(client *mongo.Client) ([]trippb.PendingTrips, error) {
 	log.Info("GetPendingTrips start")
 	// Get the trips collection
 	collection := client.Database("rideshare").Collection("trips")
