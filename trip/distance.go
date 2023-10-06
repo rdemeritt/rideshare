@@ -7,10 +7,8 @@ import (
 	"rideshare/database"
 	"rideshare/gmapsclient"
 	trippb "rideshare/proto/trip"
-	"time"
 
 	log "github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	_ "google.golang.org/protobuf/encoding/protojson"
 	"googlemaps.github.io/maps"
@@ -72,13 +70,15 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, distance 
 
 	var results []*trippb.PendingTrips
 
-	err := database.GetPendingTrips(client, *results)
+	err := database.GetPendingTrips(client, &results)
+	log.Debugf("GetTripsInProximity results: %v", results)
+
 	if err != nil {
 		log.Errorf("failed to query MongoDB: %v", err)
 	}
 	// iterate through the results
 	for _, result := range results {
-		log.Debugf("GetTripsInProximity result: %s", result)
+		log.Debugf("GetTripsInProximity result: %s", result.String())
 		// append PassengerStart to Destinations
 		request.Destinations = append(request.Destinations, result.PassengerStart)
 	}
