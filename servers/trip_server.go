@@ -51,7 +51,7 @@ func (s *server) GetTimeInNYC(ctx context.Context, _ *trippb.NoInput) (*trippb.S
 func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
 	log.Info("CreateTripRequest start")
 	defer log.Info("CreateTripRequest end")
-    
+
 	// set the status to pending
 	req.Status = "pending"
 	// connect to mongodb
@@ -76,7 +76,7 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	common.Check(err)
     defer client.Disconnect(ctx)
 
-	tripRequest, err := database.GetTripRequestByID(client, req.Id)
+	tripRequest, err := database.GetTripRequestByID(client, req.TripId)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsBy
     common.Check(err)
     defer client.Disconnect(ctx)
 
-    trip.GetTripsInProximity(client, req.DriverLocation, req.Distance)
+    trip.GetTripsInProximity(client, req.DriverLocation, req.Distance, req.DistanceUnits)
 
     return &trippb.GetTripsByProximityResponse{}, nil
 }

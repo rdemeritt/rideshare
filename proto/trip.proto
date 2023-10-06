@@ -7,11 +7,11 @@ import "google/protobuf/timestamp.proto";
 
 message TripRequest
 {
-  string id = 1;
-  string passenger_start = 2;
-  string passenger_end = 3;
-  string driver_location = 4;
-  string distance_units = 5;
+  string trip_id = 1;
+  string passenger_start = 2 [json_name = "passengerstart"];
+  string passenger_end = 3 [json_name = "passengerend"];
+  string driver_location = 4 [json_name = "driverlocation"];
+  string distance_units = 5 [json_name = "distanceunits"];
   google.protobuf.Timestamp creationtime = 6;
   string status = 7;
 }
@@ -24,10 +24,23 @@ message TripResponse
   string passenger_start_to_passenger_end_duration = 4;
 }
 
+message PendingTrips
+{
+  string _id = 1;
+  string trip_id = 2;
+  string passenger_start = 3 [json_name = "passengerstart"];
+  string passenger_end = 4 [json_name = "passengerend"];
+  string driver_location = 5 [json_name = "driverlocation"];
+  string distance_units = 6 [json_name = "distanceunits"];
+  google.protobuf.Timestamp creationtime = 7;
+  string status = 8;
+}
+
 message GetTripsByProximityRequest
 {
   string driver_location = 1;
   string distance = 2;
+  string distance_units = 3;
 }
 
 message GetTripsByProximityResponse
