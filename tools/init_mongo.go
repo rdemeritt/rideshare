@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
-	_ "rideshare/log"
 	"rideshare/common"
 	"rideshare/database"
+	_ "rideshare/log"
+	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreateDatabaseCollection(client *mongo.Client, db string, collection string) error {
@@ -40,6 +42,31 @@ func main() {
 	common.Check(err)
 	defer client.Disconnect(context.Background())
 
-	common.Check(CreateDatabaseCollection(client, "rideshare", "trips"))
+	// common.Check(CreateDatabaseCollection(client, "rideshare", "trips"))
 	// common.Check(CreateMongoUser(client, "rideshare", "rideshare_admin", "Password1!", "readWrite"))
+	common.Check(CancelTripsWithID(client))
+}
+
+// CancelTripsWithID sets the status of trips with non-null IDs to "canceled"
+// needed after changing the id field in the trips collection to be trip_id
+func CancelTripsWithID(client *mongo.Client) error {
+	log.Info("CancelTripsWithNonNullID start")
+	// Get the trips collection
+	collection := client.Database("rideshare").Collection("trips")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Update the status of trips with non-null IDs to "canceled"
+	filter := bson.M{"id": bson.M{"$ne": nil}}
+	update := bson.M{"$set": bson.M{"status": "canceled"}}
+	result, err := collection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		log.Errorf("failed to update trips: %v", err)
+		return err
+	}
+	log.Debugf("CancelTripsWithNonNullID result: %v", result)
+
+	defer log.Info("CancelTripsWithNonNullID end")
+
+	return nil
 }

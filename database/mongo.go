@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func GetMongoDBClient() (*mongo.Client, error ){
+func GetMongoDBClient() (*mongo.Client, error) {
 	client, err := ConnectToMongoDB("localhost", "27017", "root", "Password1!")
 	if err != nil {
 		log.Errorf("failed to connect to MongoDB: %v", err)
@@ -29,7 +29,7 @@ func ConnectToMongoDB(host string, port string, user string, pass string) (*mong
 	defer log.Info("ConnectToMongoDB end")
 
 	// Set client options
-	clientOptions := options.Client().ApplyURI("mongodb://"+user+":"+pass+"@"+host+":"+port)
+	clientOptions := options.Client().ApplyURI("mongodb://" + user + ":" + pass + "@" + host + ":" + port)
 
 	// Connect to MongoDB
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -51,7 +51,7 @@ func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
 	defer cancel()
 
 	// set uuid
-	req.Id = uuid.New().String()
+	req.TripId = uuid.New().String()
 	// set creationtime
 	req.Creationtime = timestamppb.Now()
 	log.Debugf(req.String())
@@ -63,23 +63,50 @@ func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
 		return err
 	}
 	defer log.Info("InsertTripRequest end")
-	
+
 	return nil
 }
 
 func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, error) {
 	log.Info("GetTripRequestByID start")
-    // Get the trips collection
-    collection := client.Database("rideshare").Collection("trips")
+	// Get the trips collection
+	collection := client.Database("rideshare").Collection("trips")
 
-    // Query for the trip with the given ID
-    filter := bson.M{"id": id}
-    var tripRequest trippb.TripRequest
-    err := collection.FindOne(context.Background(), filter).Decode(&tripRequest)
-    if err != nil {
-        return nil, fmt.Errorf("failed to find trip with ID %s: %v", id, err)
-    }
+	// Query for the trip with the given ID
+	filter := bson.M{"id": id}
+	var tripRequest trippb.TripRequest
+	err := collection.FindOne(context.Background(), filter).Decode(&tripRequest)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find trip with ID %s: %v", id, err)
+	}
 	defer log.Info("GetTripRequestByID end")
+	log.Debugf("GetTripRequestByID tripRequest: %v", tripRequest.String())
 
-    return &tripRequest, nil
+	return &tripRequest, nil
+}
+
+func GetPendingTrips(client *mongo.Client, results *[]*trippb.PendingTrip) (error) {
+	log.Info("GetPendingTrips start")
+	// Get the trips collection
+	collection := client.Database("rideshare").Collection("trips")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Query for the trip with the given ID
+	filter := bson.M{"status": "pending"}
+	cursor, err := collection.Find(ctx, &filter)
+	if err != nil {
+		return fmt.Errorf("failed to find pending trips: %v", err)
+	}
+	log.Debugf("GetPendingTrips cursor: %v", cursor)
+
+	err = cursor.All(ctx, results)
+	if err != nil {
+		return fmt.Errorf("failed to decode MongoDB cursor: %v", err)
+	}
+	log.Debugf("GetPendingTrips results: %v", results)
+
+	defer log.Info("GetPendingTrips end")
+
+	return nil
 }
