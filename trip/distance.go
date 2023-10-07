@@ -3,9 +3,14 @@ package trip
 import (
 	"context"
 	"fmt"
+	_ "rideshare/common"
+	"rideshare/database"
+	"rideshare/gmapsclient"
 	trippb "rideshare/proto/trip"
 
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
+	_ "google.golang.org/protobuf/encoding/protojson"
 	"googlemaps.github.io/maps"
 )
 
@@ -38,7 +43,7 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 
 	// log the contents of req
 	log.Debugf("TripRequest: %v", req)
-	
+
 	// log the contents of request
 	log.Debugf("DistanceMatrixRequest: %v", request)
 
@@ -49,6 +54,53 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 	}
 
 	return response, nil
+}
+
+// query mongodb for trips that are in pending and within the specified proximity
+func GetTripsInProximity(client *mongo.Client, driver_location string, proximity_distance string, units string) {
+	log.Info("GetTripsInProximity start")
+	defer log.Info("GetTripsInProximity end")
+	
+
+	// Build the distance matrix dmrReqest and set Origins as the driver_location
+	dmrReqest := &maps.DistanceMatrixRequest{Origins: []string{driver_location}}
+
+	// set units
+	SetUnits(units, dmrReqest)
+
+	var pendingTrips []*trippb.PendingTrip
+
+	err := database.GetPendingTrips(client, &pendingTrips)
+	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
+
+	if err != nil {
+		log.Errorf("failed to query MongoDB: %v", err)
+	}
+	// iterate through the results
+	for _, pendingTrip := range pendingTrips {
+		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
+		// append PassengerStart to Destinations
+		dmrReqest.Destinations = append(dmrReqest.Destinations, pendingTrip.PassengerStart)
+	}
+	log.Debugf("GetTripsInProximity dmrRequest: %v", dmrReqest)
+
+	// get google maps client
+	gmapsClient, err := gmapsclient.NewMapsClient()
+	if err != nil {
+		log.Errorf("failed to create google maps client: %v", err)
+	}
+
+	// Send the distance matrix request
+	dmrResponse, err := gmapsClient.DistanceMatrix(context.Background(), dmrReqest)
+	if err != nil {
+		log.Errorf("failed to get distance matrix: %v", err)
+	}
+	log.Debugf("GetTripsInProximity dmrResponse: %v", dmrResponse)
+	if log.GetLevel() == log.DebugLevel {
+		PrintFullDistanceMatrix(dmrResponse)
+	}
+
+	// 
 }
 
 func SetUnits(units string, r *maps.DistanceMatrixRequest) {
