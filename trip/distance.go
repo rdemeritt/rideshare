@@ -3,9 +3,12 @@ package trip
 import (
 	"context"
 	"fmt"
+	"math"
+	"rideshare/common"
 	"rideshare/database"
 	"rideshare/gmapsclient"
 	trippb "rideshare/proto/trip"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -58,16 +61,14 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 func GetTripsInProximity(client *mongo.Client, driver_location string, proximity_distance string, units string) ([]*trippb.GetTripsByProximityResponse, error) {
 	log.Info("GetTripsInProximity start")
 	defer log.Info("GetTripsInProximity end")
-	
 
 	// Build the distance matrix dmrReqest and set Origins as the driver_location
 	dmrReqest := &maps.DistanceMatrixRequest{Origins: []string{driver_location}}
-
-	// set units
+	// set units for dmrReqest
 	SetUnits(units, dmrReqest)
 
+	// query mongodb for trips that are in pending
 	var pendingTrips []*trippb.PendingTrip
-
 	err := database.GetPendingTrips(client, &pendingTrips)
 	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
 	if err != nil {
@@ -102,31 +103,64 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 	}
 
 	// take each element in dmrResponse and the corresponding entry in pendingTrips
-	// and set the distance and duration in GetTripsByProximityResponse
-	var tripsByProximity []*trippb.GetTripsByProximityResponse
+	// and set the distance and duration in getTripsByProximityResponse
+	var getTripsByProximityResponse []*trippb.GetTripsByProximityResponse
+	var proximity_distance_meters float64
+	var proximity_distance_meters_whole int
+	// convert proximity_distance from string to float64
+	proximity_distance_float, _ := strconv.ParseFloat(proximity_distance, 64)
+
+	// convert proximity_distance to the proper unit of measurement
+	switch units {
+	case "imperial":
+		// convert from miles to meters
+		proximity_distance_meters = proximity_distance_float * common.MetersInMile
+
+	case "metric":
+		// convert from km to meters
+		proximity_distance_meters = proximity_distance_float * common.MetersInKilometer
+
+	default:
+		log.Fatalf("Unknown units: %s", units)
+	}
+	proximity_distance_meters_whole = int(math.Round(proximity_distance_meters))
+	log.Debugf("Trip proximity in meters: %v\n", proximity_distance_meters_whole)
+
+	// iterate through dmrResponse and find the trips that are within the specified proximity
 	for i, row := range dmrResponse.Rows {
 		for j, element := range row.Elements {
 			if element.Status == "OK" {
-				tripResponse := &trippb.TripResponse{
-					PassengerStartToPassengerEndDistance: element.Distance.HumanReadable,
-					PassengerStartToPassengerEndDuration: element.Duration.String(),
-					DriverLocationToPassengerStartDistance: dmrResponse.Rows[0].Elements[j].Distance.HumanReadable,
-					DriverLocationToPassengerStartDuration: dmrResponse.Rows[0].Elements[j].Duration.String(),
+				log.Debugf("Trip Distance in meters: %v\n", dmrResponse.Rows[0].Elements[j].Distance.Meters)
+				log.Debugf("Trip Distance in HumanReadable: %v\n", dmrResponse.Rows[0].Elements[j].Distance.HumanReadable)
+				// test to see if DriverLocationToPassengerStartDistance is within the specified proximity
+				if dmrResponse.Rows[0].Elements[j].Distance.Meters <= proximity_distance_meters_whole {
+					log.Debugf("Distance: %v\n", element.Distance.HumanReadable)
+					log.Debugf("Duration: %v\n", element.Duration)
+
+					// append to getTripsByProximityResponse
+					getTripsByProximityResponse = append(
+						getTripsByProximityResponse, &trippb.GetTripsByProximityResponse{
+							TripId: pendingTrips[i].TripId,
+							TripResponse: &trippb.TripResponse{
+								PassengerStartToPassengerEndDistance:   element.Distance.HumanReadable,
+								PassengerStartToPassengerEndDuration:   element.Duration.String(),
+								DriverLocationToPassengerStartDistance: dmrResponse.Rows[0].Elements[j].Distance.HumanReadable,
+								DriverLocationToPassengerStartDuration: dmrResponse.Rows[0].Elements[j].Duration.String(),
+							},
+						},
+					)
+				} else {
+					continue
 				}
-				
-				tripsByProximity = append(tripsByProximity, &trippb.GetTripsByProximityResponse{
-					TripId: pendingTrips[i].TripId,
-					TripResponse: tripResponse,
-				})
 			} else {
 				log.Debugf("Error: %v\n", element.Status)
 				continue
 			}
 		}
 	}
-	
-	log.Debugf("GetTripsInProximity tripsByProximity: %v", tripsByProximity)
-	return tripsByProximity, nil
+
+	log.Debugf("GetTripsInProximity getTripsByProximityResponse: %v", getTripsByProximityResponse)
+	return getTripsByProximityResponse, nil
 }
 
 func SetUnits(units string, r *maps.DistanceMatrixRequest) {
@@ -135,8 +169,6 @@ func SetUnits(units string, r *maps.DistanceMatrixRequest) {
 		r.Units = maps.UnitsMetric
 	case "imperial":
 		r.Units = maps.UnitsImperial
-	case "":
-		// ignore
 	default:
 		log.Fatalf("Unknown units %s", units)
 	}

@@ -67,17 +67,17 @@ func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
 	return nil
 }
 
-func GetTripRequestByID(client *mongo.Client, id string) (*trippb.TripRequest, error) {
+func GetTripRequestByID(client *mongo.Client, trip_id string) (*trippb.TripRequest, error) {
 	log.Info("GetTripRequestByID start")
 	// Get the trips collection
 	collection := client.Database("rideshare").Collection("trips")
 
 	// Query for the trip with the given ID
-	filter := bson.M{"id": id}
+	filter := bson.M{"trip_id": trip_id}
 	var tripRequest trippb.TripRequest
 	err := collection.FindOne(context.Background(), filter).Decode(&tripRequest)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find trip with ID %s: %v", id, err)
+		return nil, fmt.Errorf("failed to find trip with trip_id %s: %v", trip_id, err)
 	}
 	defer log.Info("GetTripRequestByID end")
 	log.Debugf("GetTripRequestByID tripRequest: %v", tripRequest.String())

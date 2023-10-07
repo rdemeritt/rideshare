@@ -10,6 +10,8 @@ import (
 const (
 	// Replace with your own API key
 	GoogleMapsAPIKey = "***REMOVED***"
+	MetersInMile     = 1609.344
+    MetersInKilometer = 1000
 )
 
 func Check(err error) {
@@ -19,43 +21,43 @@ func Check(err error) {
 }
 
 func BsonMToJson(m bson.M) ([]byte, error) {
-    // Convert the bson.M object to a map[string]interface{}
-    var data map[string]interface{}
-    bytes, err := bson.Marshal(m)
-    if err != nil {
-        return nil, err
-    }
-    err = bson.Unmarshal(bytes, &data)
-    if err != nil {
-        return nil, err
-    }
+	// Convert the bson.M object to a map[string]interface{}
+	var data map[string]interface{}
+	bytes, err := bson.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	err = bson.Unmarshal(bytes, &data)
+	if err != nil {
+		return nil, err
+	}
 
-    // Convert the map to JSON
-    jsonBytes, err := json.Marshal(data)
-    if err != nil {
-        return nil, err
-    }
+	// Convert the map to JSON
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
 
-    return jsonBytes, nil
+	return jsonBytes, nil
 }
 
 func BsonDToJson(d bson.D) ([]byte, error) {
-    // Convert the bson.D object to a map[string]interface{}
-    var data map[string]interface{}
-    bytes, err := bson.Marshal(d)
-    if err != nil {
-        return nil, err
-    }
-    err = bson.Unmarshal(bytes, &data)
-    if err != nil {
-        return nil, err
-    }
+	// Convert the bson.D object to a map[string]interface{}
+	var data map[string]interface{}
+	bytes, err := bson.Marshal(d)
+	if err != nil {
+		return nil, err
+	}
+	err = bson.Unmarshal(bytes, &data)
+	if err != nil {
+		return nil, err
+	}
 
-    // Convert the map to JSON
-    jsonBytes, err := json.Marshal(data)
-    if err != nil {
-        return nil, err
-    }
+	// Convert the map to JSON
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
 
-    return jsonBytes, nil
+	return jsonBytes, nil
 }
