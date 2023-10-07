@@ -3,14 +3,12 @@ package trip
 import (
 	"context"
 	"fmt"
-	_ "rideshare/common"
 	"rideshare/database"
 	"rideshare/gmapsclient"
 	trippb "rideshare/proto/trip"
 
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
-	_ "google.golang.org/protobuf/encoding/protojson"
 	"googlemaps.github.io/maps"
 )
 
@@ -57,7 +55,7 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 }
 
 // query mongodb for trips that are in pending and within the specified proximity
-func GetTripsInProximity(client *mongo.Client, driver_location string, proximity_distance string, units string) {
+func GetTripsInProximity(client *mongo.Client, driver_location string, proximity_distance string, units string) ([]*trippb.GetTripsByProximityResponse, error) {
 	log.Info("GetTripsInProximity start")
 	defer log.Info("GetTripsInProximity end")
 	
@@ -72,10 +70,11 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 
 	err := database.GetPendingTrips(client, &pendingTrips)
 	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
-
 	if err != nil {
 		log.Errorf("failed to query MongoDB: %v", err)
+		return nil, err
 	}
+
 	// iterate through the results
 	for _, pendingTrip := range pendingTrips {
 		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
@@ -88,19 +87,46 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 	gmapsClient, err := gmapsclient.NewMapsClient()
 	if err != nil {
 		log.Errorf("failed to create google maps client: %v", err)
+		return nil, err
 	}
 
 	// Send the distance matrix request
 	dmrResponse, err := gmapsClient.DistanceMatrix(context.Background(), dmrReqest)
 	if err != nil {
 		log.Errorf("failed to get distance matrix: %v", err)
+		return nil, err
 	}
 	log.Debugf("GetTripsInProximity dmrResponse: %v", dmrResponse)
 	if log.GetLevel() == log.DebugLevel {
 		PrintFullDistanceMatrix(dmrResponse)
 	}
 
-	// 
+	// take each element in dmrResponse and the corresponding entry in pendingTrips
+	// and set the distance and duration in GetTripsByProximityResponse
+	var tripsByProximity []*trippb.GetTripsByProximityResponse
+	for i, row := range dmrResponse.Rows {
+		for j, element := range row.Elements {
+			if element.Status == "OK" {
+				tripResponse := &trippb.TripResponse{
+					PassengerStartToPassengerEndDistance: element.Distance.HumanReadable,
+					PassengerStartToPassengerEndDuration: element.Duration.String(),
+					DriverLocationToPassengerStartDistance: dmrResponse.Rows[0].Elements[j].Distance.HumanReadable,
+					DriverLocationToPassengerStartDuration: dmrResponse.Rows[0].Elements[j].Duration.String(),
+				}
+				
+				tripsByProximity = append(tripsByProximity, &trippb.GetTripsByProximityResponse{
+					TripId: pendingTrips[i].TripId,
+					TripResponse: tripResponse,
+				})
+			} else {
+				log.Debugf("Error: %v\n", element.Status)
+				continue
+			}
+		}
+	}
+	
+	log.Debugf("GetTripsInProximity tripsByProximity: %v", tripsByProximity)
+	return tripsByProximity, nil
 }
 
 func SetUnits(units string, r *maps.DistanceMatrixRequest) {

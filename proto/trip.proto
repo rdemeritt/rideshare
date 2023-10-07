@@ -45,8 +45,8 @@ message GetTripsByProximityRequest
 
 message GetTripsByProximityResponse
 {
-  string ids = 1;
-  TripResponse trips = 2;
+  string trip_id = 1;
+  TripResponse trip_response = 2;
 }
 
 message NoInput
