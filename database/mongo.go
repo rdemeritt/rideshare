@@ -73,7 +73,7 @@ func GetTripRequestByID(client *mongo.Client, trip_id string) (*trippb.TripReque
 	collection := client.Database("rideshare").Collection("trips")
 
 	// Query for the trip with the given ID
-	filter := bson.M{"trip_id": trip_id}
+	filter := bson.M{"tripid": trip_id}
 	var tripRequest trippb.TripRequest
 	err := collection.FindOne(context.Background(), filter).Decode(&tripRequest)
 	if err != nil {

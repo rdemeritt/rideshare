@@ -62,30 +62,14 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 	log.Info("GetTripsInProximity start")
 	defer log.Info("GetTripsInProximity end")
 
-	// Build the distance matrix dmrReqest and set Origins as the driver_location
-	dmrReqest := &maps.DistanceMatrixRequest{}
-	// set units for dmrReqest
-	SetUnits(units, dmrReqest)
-
 	// query mongodb for trips that are in pending
 	var pendingTrips []*trippb.PendingTrip
 	err := database.GetPendingTrips(client, &pendingTrips)
-	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
 	if err != nil {
 		log.Errorf("failed to query MongoDB: %v", err)
 		return nil, err
 	}
-
-	// iterate through the results
-	for _, pendingTrip := range pendingTrips {
-		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
-		dmrReqest.Origins = append(dmrReqest.Origins, driver_location)
-		dmrReqest.Origins = append(dmrReqest.Origins, pendingTrip.PassengerStart)
-		// append PassengerStart to Destinations
-		dmrReqest.Destinations = append(dmrReqest.Destinations, pendingTrip.PassengerStart)
-		dmrReqest.Destinations = append(dmrReqest.Destinations, pendingTrip.PassengerEnd)
-	}
-	log.Debugf("GetTripsInProximity dmrRequest: %v", dmrReqest)
+	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
 
 	// get google maps client
 	gmapsClient, err := gmapsclient.NewMapsClient()
@@ -94,21 +78,62 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 		return nil, err
 	}
 
-	// Send the distance matrix request
-	dmrResponse, err := gmapsClient.DistanceMatrix(context.Background(), dmrReqest)
-	if err != nil {
-		log.Errorf("failed to get distance matrix: %v", err)
-		return nil, err
-	}
-	log.Debugf("GetTripsInProximity dmrResponse: %v", dmrResponse)
-	if log.GetLevel() == log.DebugLevel {
-		PrintFullDistanceMatrix(dmrResponse)
-	}
-
-	// take each element in dmrResponse and the corresponding entry in pendingTrips
-	// and set the distance and duration in getTripsByProximityResponse
+	var tripDetails Trip
 	var tripIds []string
 	var tripResponse []*trippb.TripResponse
+	// iterate through the results of database.GetPendingTrips
+	for _, pendingTrip := range pendingTrips {
+		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
+
+		dmrResponse, _ := GetTripRequestDistanceMatrix(gmapsClient,
+			&trippb.TripRequest{
+				PassengerStart: pendingTrip.PassengerStart,
+				PassengerEnd:   pendingTrip.PassengerEnd,
+				DriverLocation: driver_location,
+				DistanceUnits:  units,
+			})
+		log.Debugf("GetTripsInProximity dmrResponse: %v", dmrResponse)
+		if log.GetLevel() == log.DebugLevel {
+			PrintFullDistanceMatrix(dmrResponse)
+		}
+
+		tripDetails = *NewEmptyTrip()
+		// fill Trip.Details struct
+		tripDetails.PopulateTripDetails(dmrResponse)
+
+		// test if tripDetails.Details.DriverLocationToPassengerStartDistance is within the specified proximity
+		if isTripInProximity(dmrResponse.Rows[0].Elements[0].Distance.Meters, proximity_distance, units) {
+			log.Debugf("Trip is within the specified proximity")
+			log.Debugf("TripId: %v", pendingTrip.TripId)
+
+			tripIds = append(tripIds, pendingTrip.TripId)
+			tripResponse = append(tripResponse, &trippb.TripResponse{
+				DriverLocationToPassengerStartDistance: tripDetails.Details.DriverLocationToPassengerStartDistance,
+				DriverLocationToPassengerStartDuration: tripDetails.Details.DriverLocationToPassengerStartDuration.String(),
+				PassengerStartToPassengerEndDistance:   tripDetails.Details.PassengerStartToPassengerEndDistance,
+				PassengerStartToPassengerEndDuration:   tripDetails.Details.PassengerStartToPassengerEndDuration.String(),
+			})
+			log.Debugf("GetTripsInProximity tripIds: %v", tripIds)
+			log.Debugf("GetTripsInProximity tripResponse: %v", tripResponse)
+
+		} else {
+			continue
+		}
+	}
+
+	log.Debugf("GetTripsInProximity tripIds: %v", tripIds)
+	log.Debugf("GetTripsInProximity tripResponse: %v", tripResponse)
+	return &trippb.GetTripsByProximityResponse{
+		TripId:       tripIds,
+		TripResponse: tripResponse,
+	}, nil
+}
+
+// test if dmrResponse is within the specified proximity
+func isTripInProximity(passenger_start_distance_meters int, proximity_distance string, units string) bool {
+	log.Debugf("isTripInProximity start")
+	defer log.Debugf("isTripInProximity end")
+
 	var proximity_distance_meters float64
 	var proximity_distance_meters_whole int
 	// convert proximity_distance from string to float64
@@ -130,42 +155,8 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 	proximity_distance_meters_whole = int(math.Round(proximity_distance_meters))
 	log.Debugf("Trip proximity in meters: %v\n", proximity_distance_meters_whole)
 
-	// iterate through dmrResponse and find the trips that are within the specified proximity
-	for i, row := range dmrResponse.Rows {
-		log.Debugf("row: %v", row)
-		for j, element := range row.Elements {
-			log.Debugf("GetTripsInProximity i, j: %v, %v", i, j)
-			if element.Status == "OK" {
-				log.Debugf("element: %v\n", element)
-				log.Debugf("Trip Distance in meters: %v\n", dmrResponse.Rows[i].Elements[j].Distance.Meters)
-				log.Debugf("Trip Distance in HumanReadable: %v\n", dmrResponse.Rows[i].Elements[j].Distance.HumanReadable)
-				// test to see if DriverLocationToPassengerStartDistance is within the specified proximity
-				if dmrResponse.Rows[i].Elements[j].Distance.Meters <= proximity_distance_meters_whole {
-					log.Debugf("Distance: %v\n", element.Distance.HumanReadable)
-					log.Debugf("Duration: %v\n", element.Duration)
-
-					// append to getTripsByProximityResponse
-					tripIds = append(tripIds, pendingTrips[j].TripId)
-					tripResponse = append(tripResponse, &trippb.TripResponse{
-						PassengerStartToPassengerEndDistance:   element.Distance.HumanReadable,
-						PassengerStartToPassengerEndDuration:   element.Duration.String(),
-						DriverLocationToPassengerStartDistance: element.Distance.HumanReadable,
-						DriverLocationToPassengerStartDuration: element.Duration.String(),
-					},
-				)
-				} else {
-					continue
-				}
-			} else {
-				log.Debugf("Error: %v\n", element.Status)
-				continue
-			}
-		}
-	}
-	return &trippb.GetTripsByProximityResponse{
-		TripId:       tripIds,
-		TripResponse: tripResponse,
-	}, nil
+	// test is Trip object is within the specified proximity, if not return false
+	return int(passenger_start_distance_meters) <= proximity_distance_meters_whole
 }
 
 func SetUnits(units string, r *maps.DistanceMatrixRequest) {
