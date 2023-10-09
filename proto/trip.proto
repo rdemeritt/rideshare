@@ -18,10 +18,11 @@ message TripRequest
 
 message TripResponse
 {
-  string driver_location_to_passenger_start_distance = 1;
-  string driver_location_to_passenger_start_duration = 2;
-  string passenger_start_to_passenger_end_distance = 3;
-  string passenger_start_to_passenger_end_duration = 4;
+  string trip_id = 1;
+  string driver_location_to_passenger_start_distance = 2;
+  string driver_location_to_passenger_start_duration = 3;
+  string passenger_start_to_passenger_end_distance = 4;
+  string passenger_start_to_passenger_end_duration = 5;
 }
 
 message PendingTrip
