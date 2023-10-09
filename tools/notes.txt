@@ -11,3 +11,11 @@ grpcurl -proto proto/*.proto -plaintext -d '{"trip_id": "d535588d-66bd-4735-b021
 grpcurl -proto proto/*.proto -plaintext -d '{"trip_id": "8d7a6095-200a-4adf-aa3a-f2a53a9d4cd2", "driver_location": "brusters woodstock rd, roswell,ga", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/CalculateTripById
 
 grpcurl -proto proto/*.proto -plaintext -d '{"driver_location": "brusters woodstock rd, roswell,ga", "distance": "10", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/GetTripsByProximity
+
+grpcurl -proto proto/*.proto -plaintext -d '{"driver_location": "brusters woodstock rd, roswell,ga", "distance": "1", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/GetTripsByProximity
+
+grpcurl -proto proto/*.proto -plaintext -d '{"driver_location": "brusters woodstock rd, roswell,ga", "distance": "2.1", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/GetTripsByProximity
+
+grpcurl -proto proto/*.proto -plaintext -d '{"driver_location": "brusters woodstock rd, roswell,ga", "distance": "2.2", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/GetTripsByProximity
+
+grpcurl -proto proto/*.proto -plaintext -d '{"driver_location": "brusters woodstock rd, roswell,ga", "distance": "2.24", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/GetTripsByProximity

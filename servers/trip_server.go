@@ -112,9 +112,11 @@ func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsBy
     common.Check(err)
     defer client.Disconnect(ctx)
 
-    trip.GetTripsInProximity(client, req.DriverLocation, req.Distance, req.DistanceUnits)
-
-    return &trippb.GetTripsByProximityResponse{}, nil
+	var res *trippb.GetTripsByProximityResponse
+    res, err = trip.GetTripsInProximity(client, req.DriverLocation, req.Distance, req.DistanceUnits)
+	common.Check(err)
+	
+    return res, nil
 }
 
 func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {

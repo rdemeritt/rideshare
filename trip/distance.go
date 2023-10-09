@@ -3,14 +3,15 @@ package trip
 import (
 	"context"
 	"fmt"
-	_ "rideshare/common"
+	"math"
+	"rideshare/common"
 	"rideshare/database"
 	"rideshare/gmapsclient"
 	trippb "rideshare/proto/trip"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
-	_ "google.golang.org/protobuf/encoding/protojson"
 	"googlemaps.github.io/maps"
 )
 
@@ -57,50 +58,105 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 }
 
 // query mongodb for trips that are in pending and within the specified proximity
-func GetTripsInProximity(client *mongo.Client, driver_location string, proximity_distance string, units string) {
+func GetTripsInProximity(client *mongo.Client, driver_location string, proximity_distance string, units string) (*trippb.GetTripsByProximityResponse, error) {
 	log.Info("GetTripsInProximity start")
 	defer log.Info("GetTripsInProximity end")
-	
 
-	// Build the distance matrix dmrReqest and set Origins as the driver_location
-	dmrReqest := &maps.DistanceMatrixRequest{Origins: []string{driver_location}}
-
-	// set units
-	SetUnits(units, dmrReqest)
-
+	// query mongodb for trips that are in pending
 	var pendingTrips []*trippb.PendingTrip
-
 	err := database.GetPendingTrips(client, &pendingTrips)
-	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
-
 	if err != nil {
 		log.Errorf("failed to query MongoDB: %v", err)
+		return nil, err
 	}
-	// iterate through the results
-	for _, pendingTrip := range pendingTrips {
-		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
-		// append PassengerStart to Destinations
-		dmrReqest.Destinations = append(dmrReqest.Destinations, pendingTrip.PassengerStart)
-	}
-	log.Debugf("GetTripsInProximity dmrRequest: %v", dmrReqest)
+	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
 
 	// get google maps client
 	gmapsClient, err := gmapsclient.NewMapsClient()
 	if err != nil {
 		log.Errorf("failed to create google maps client: %v", err)
+		return nil, err
 	}
 
-	// Send the distance matrix request
-	dmrResponse, err := gmapsClient.DistanceMatrix(context.Background(), dmrReqest)
-	if err != nil {
-		log.Errorf("failed to get distance matrix: %v", err)
-	}
-	log.Debugf("GetTripsInProximity dmrResponse: %v", dmrResponse)
-	if log.GetLevel() == log.DebugLevel {
-		PrintFullDistanceMatrix(dmrResponse)
+	var tripDetails Trip
+	var tripIds []string
+	var tripResponse []*trippb.TripResponse
+	// iterate through the results of database.GetPendingTrips
+	for _, pendingTrip := range pendingTrips {
+		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
+
+		dmrResponse, _ := GetTripRequestDistanceMatrix(gmapsClient,
+			&trippb.TripRequest{
+				PassengerStart: pendingTrip.PassengerStart,
+				PassengerEnd:   pendingTrip.PassengerEnd,
+				DriverLocation: driver_location,
+				DistanceUnits:  units,
+			})
+		log.Debugf("GetTripsInProximity dmrResponse: %v", dmrResponse)
+		if log.GetLevel() == log.DebugLevel {
+			PrintFullDistanceMatrix(dmrResponse)
+		}
+
+		tripDetails = *NewEmptyTrip()
+		// fill Trip.Details struct
+		tripDetails.PopulateTripDetails(dmrResponse)
+
+		// test if tripDetails.Details.DriverLocationToPassengerStartDistance is within the specified proximity
+		if isTripInProximity(dmrResponse.Rows[0].Elements[0].Distance.Meters, proximity_distance, units) {
+			log.Debugf("Trip is within the specified proximity")
+			log.Debugf("TripId: %v", pendingTrip.TripId)
+
+			tripIds = append(tripIds, pendingTrip.TripId)
+			tripResponse = append(tripResponse, &trippb.TripResponse{
+				DriverLocationToPassengerStartDistance: tripDetails.Details.DriverLocationToPassengerStartDistance,
+				DriverLocationToPassengerStartDuration: tripDetails.Details.DriverLocationToPassengerStartDuration.String(),
+				PassengerStartToPassengerEndDistance:   tripDetails.Details.PassengerStartToPassengerEndDistance,
+				PassengerStartToPassengerEndDuration:   tripDetails.Details.PassengerStartToPassengerEndDuration.String(),
+			})
+			log.Debugf("GetTripsInProximity tripIds: %v", tripIds)
+			log.Debugf("GetTripsInProximity tripResponse: %v", tripResponse)
+
+		} else {
+			continue
+		}
 	}
 
-	// 
+	log.Debugf("GetTripsInProximity tripIds: %v", tripIds)
+	log.Debugf("GetTripsInProximity tripResponse: %v", tripResponse)
+	return &trippb.GetTripsByProximityResponse{
+		TripId:       tripIds,
+		TripResponse: tripResponse,
+	}, nil
+}
+
+// test if dmrResponse is within the specified proximity
+func isTripInProximity(passenger_start_distance_meters int, proximity_distance string, units string) bool {
+	log.Debugf("isTripInProximity start")
+	defer log.Debugf("isTripInProximity end")
+
+	var proximity_distance_meters float64
+	var proximity_distance_meters_whole int
+	// convert proximity_distance from string to float64
+	proximity_distance_float, _ := strconv.ParseFloat(proximity_distance, 64)
+
+	// convert proximity_distance to the proper unit of measurement
+	switch units {
+	case "imperial":
+		// convert from miles to meters
+		proximity_distance_meters = proximity_distance_float * common.MetersInMile
+
+	case "metric":
+		// convert from km to meters
+		proximity_distance_meters = proximity_distance_float * common.MetersInKilometer
+
+	default:
+		log.Fatalf("Unknown units: %s", units)
+	}
+	proximity_distance_meters_whole = int(math.Round(proximity_distance_meters))
+	log.Debugf("Trip proximity in meters: %v\n", proximity_distance_meters_whole)
+
+	// test is Trip object is within the specified proximity, if not return false
+	return int(passenger_start_distance_meters) <= proximity_distance_meters_whole
 }
 
 func SetUnits(units string, r *maps.DistanceMatrixRequest) {
@@ -109,8 +165,6 @@ func SetUnits(units string, r *maps.DistanceMatrixRequest) {
 		r.Units = maps.UnitsMetric
 	case "imperial":
 		r.Units = maps.UnitsImperial
-	case "":
-		// ignore
 	default:
 		log.Fatalf("Unknown units %s", units)
 	}
