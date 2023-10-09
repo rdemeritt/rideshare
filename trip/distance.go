@@ -15,7 +15,7 @@ import (
 	"googlemaps.github.io/maps"
 )
 
-func GetDistanceMatrix(client *maps.Client, driverLocation string, passengerStart string, passengerEnd string, units string) (*maps.DistanceMatrixResponse, error) {
+func GetDistanceMatrix(ctx context.Context, client *maps.Client, driverLocation string, passengerStart string, passengerEnd string, units string) (*maps.DistanceMatrixResponse, error) {
 	// Build the distance matrix request
 	request := &maps.DistanceMatrixRequest{
 		Origins:      []string{driverLocation, passengerStart},
@@ -25,7 +25,7 @@ func GetDistanceMatrix(client *maps.Client, driverLocation string, passengerStar
 	SetUnits(units, request)
 
 	// Send the distance matrix request
-	response, err := client.DistanceMatrix(context.Background(), request)
+	response, err := client.DistanceMatrix(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func GetDistanceMatrix(client *maps.Client, driverLocation string, passengerStar
 	return response, nil
 }
 
-func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) (*maps.DistanceMatrixResponse, error) {
+func GetTripRequestDistanceMatrix(ctx context.Context, client *maps.Client, req *trippb.TripRequest) (*maps.DistanceMatrixResponse, error) {
 	// Build the distance matrix request
 	request := &maps.DistanceMatrixRequest{
 		Origins:      []string{req.DriverLocation, req.PassengerStart},
@@ -49,7 +49,7 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 	log.Debugf("DistanceMatrixRequest: %v", request)
 
 	// Send the distance matrix request
-	response, err := client.DistanceMatrix(context.Background(), request)
+	response, err := client.DistanceMatrix(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -58,13 +58,13 @@ func GetTripRequestDistanceMatrix(client *maps.Client, req *trippb.TripRequest) 
 }
 
 // query mongodb for trips that are in pending and within the specified proximity
-func GetTripsInProximity(client *mongo.Client, driver_location string, proximity_distance string, units string) (*trippb.GetTripsByProximityResponse, error) {
+func GetTripsInProximity(ctx context.Context, client *mongo.Client, driver_location string, proximity_distance string, units string) (*trippb.GetTripsByProximityResponse, error) {
 	log.Info("GetTripsInProximity start")
 	defer log.Info("GetTripsInProximity end")
 
 	// query mongodb for trips that are in pending
 	var pendingTrips []*trippb.PendingTrip
-	err := database.GetPendingTrips(client, &pendingTrips)
+	err := database.GetPendingTrips(ctx, client, &pendingTrips)
 	if err != nil {
 		log.Errorf("failed to query MongoDB: %v", err)
 		return nil, err
@@ -86,7 +86,7 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 	for _, pendingTrip := range pendingTrips {
 		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
 
-		dmrResponse, _ := GetTripRequestDistanceMatrix(gmapsClient,
+		dmrResponse, _ := GetTripRequestDistanceMatrix(ctx, gmapsClient,
 			&trippb.TripRequest{
 				PassengerStart: pendingTrip.PassengerStart,
 				PassengerEnd:   pendingTrip.PassengerEnd,

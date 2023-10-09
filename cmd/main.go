@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"rideshare/args"
 	"rideshare/common"
 	"rideshare/gmapsclient"
@@ -45,7 +46,7 @@ func main() {
 		t.SetDriverLocation(argv.DriverLocation)
 
 		// Get the distance matrix
-		fullTripMatrix, err := trip.GetDistanceMatrix(client, t.Coordinates.DriverLocation, t.Coordinates.PassengerStart, t.Coordinates.PassengerEnd, t.Units.Distance)
+		fullTripMatrix, err := trip.GetDistanceMatrix(context.Background(), client, t.Coordinates.DriverLocation, t.Coordinates.PassengerStart, t.Coordinates.PassengerEnd, t.Units.Distance)
 		common.Check(err)
 		if logger.GetLogLevel() == "debug" {
 			trip.PrintDistanceMatrix(fullTripMatrix)
