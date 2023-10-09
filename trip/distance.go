@@ -81,6 +81,7 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 	var tripDetails Trip
 	var tripIds []string
 	var tripResponse []*trippb.TripResponse
+	var driverLocationToPassengerStartDistance int
 	// iterate through the results of database.GetPendingTrips
 	for _, pendingTrip := range pendingTrips {
 		log.Debugf("GetTripsInProximity pendingTrip: %s", pendingTrip.String())
@@ -101,19 +102,18 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 		// fill Trip.Details struct
 		tripDetails.PopulateTripDetails(dmrResponse)
 
+		driverLocationToPassengerStartDistance = dmrResponse.Rows[0].Elements[0].Distance.Meters
 		// test if tripDetails.Details.DriverLocationToPassengerStartDistance is within the specified proximity
-		if isTripInProximity(dmrResponse.Rows[0].Elements[0].Distance.Meters, proximity_distance, units) {
+		if isTripInProximity(driverLocationToPassengerStartDistance, proximity_distance, units) {
 			log.Debugf("Trip is within the specified proximity")
-			log.Debugf("TripId: %v", pendingTrip.TripId)
 
-			tripIds = append(tripIds, pendingTrip.TripId)
 			tripResponse = append(tripResponse, &trippb.TripResponse{
+				TripId: 								 pendingTrip.TripId,
 				DriverLocationToPassengerStartDistance: tripDetails.Details.DriverLocationToPassengerStartDistance,
 				DriverLocationToPassengerStartDuration: tripDetails.Details.DriverLocationToPassengerStartDuration.String(),
 				PassengerStartToPassengerEndDistance:   tripDetails.Details.PassengerStartToPassengerEndDistance,
 				PassengerStartToPassengerEndDuration:   tripDetails.Details.PassengerStartToPassengerEndDuration.String(),
 			})
-			log.Debugf("GetTripsInProximity tripIds: %v", tripIds)
 			log.Debugf("GetTripsInProximity tripResponse: %v", tripResponse)
 
 		} else {
@@ -124,7 +124,6 @@ func GetTripsInProximity(client *mongo.Client, driver_location string, proximity
 	log.Debugf("GetTripsInProximity tripIds: %v", tripIds)
 	log.Debugf("GetTripsInProximity tripResponse: %v", tripResponse)
 	return &trippb.GetTripsByProximityResponse{
-		TripId:       tripIds,
 		TripResponse: tripResponse,
 	}, nil
 }
