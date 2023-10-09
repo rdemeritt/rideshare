@@ -44,3 +44,38 @@ func TestCalculateNewTrip(t *testing.T) {
 	assert.NotEmpty(t, resp.PassengerStartToPassengerEndDistance)
 	assert.NotEmpty(t, resp.PassengerStartToPassengerEndDuration)
 }
+
+func TestCreateTripRequest(t *testing.T) {
+	// Create a new gRPC client
+	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial gRPC server: %v", err)
+	}
+	defer conn.Close()
+
+	// Create a new TripService client
+	tripClient := trippb.NewTripServiceClient(conn)
+
+	// Create a new TripRequest object
+	req := &trippb.TripRequest{
+		PassengerStart: "10330 shallowford rd, roswell,ga",
+		PassengerEnd:   "homedepot 30075",
+		DriverLocation: "brusters woodstock rd, roswell,ga",
+		DistanceUnits:  "imperial",
+	}
+
+	// Call the CreateTripRequest service
+	resp, err := tripClient.CreateTripRequest(context.Background(), req)
+	if err != nil {
+		t.Fatalf("Failed to call CreateTripRequest: %v", err)
+	}
+
+	// Check that the response is not nil
+	assert.NotNil(t, resp)
+
+	// Check that the response contains valid data
+	assert.NotEmpty(t, resp.TripId)
+	assert.NotEmpty(t, resp.DriverLocation)
+	assert.NotEmpty(t, resp.PassengerStart)
+	assert.NotEmpty(t, resp.PassengerEnd)
+}
