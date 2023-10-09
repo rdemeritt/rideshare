@@ -48,6 +48,7 @@ func InsertTripRequest(client *mongo.Client, req *trippb.TripRequest) error {
 	// Insert a new TripRequest entry into the rideshare database and trips collection
 	collection := client.Database("rideshare").Collection("trips")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
 	defer cancel()
 
 	// set uuid

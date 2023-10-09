@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	TripService_CalculateTripById_FullMethodName   = "/rideshare.TripService/CalculateTripById"
 	TripService_CalculateNewTrip_FullMethodName    = "/rideshare.TripService/CalculateNewTrip"
-	TripService_GetTimeInNYC_FullMethodName        = "/rideshare.TripService/GetTimeInNYC"
 	TripService_CreateTripRequest_FullMethodName   = "/rideshare.TripService/CreateTripRequest"
 	TripService_GetTripsByProximity_FullMethodName = "/rideshare.TripService/GetTripsByProximity"
 )
@@ -32,7 +31,6 @@ const (
 type TripServiceClient interface {
 	CalculateTripById(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error)
 	CalculateNewTrip(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripResponse, error)
-	GetTimeInNYC(ctx context.Context, in *NoInput, opts ...grpc.CallOption) (*StringResponse, error)
 	CreateTripRequest(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripRequest, error)
 	GetTripsByProximity(ctx context.Context, in *GetTripsByProximityRequest, opts ...grpc.CallOption) (*GetTripsByProximityResponse, error)
 }
@@ -63,15 +61,6 @@ func (c *tripServiceClient) CalculateNewTrip(ctx context.Context, in *TripReques
 	return out, nil
 }
 
-func (c *tripServiceClient) GetTimeInNYC(ctx context.Context, in *NoInput, opts ...grpc.CallOption) (*StringResponse, error) {
-	out := new(StringResponse)
-	err := c.cc.Invoke(ctx, TripService_GetTimeInNYC_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *tripServiceClient) CreateTripRequest(ctx context.Context, in *TripRequest, opts ...grpc.CallOption) (*TripRequest, error) {
 	out := new(TripRequest)
 	err := c.cc.Invoke(ctx, TripService_CreateTripRequest_FullMethodName, in, out, opts...)
@@ -96,7 +85,6 @@ func (c *tripServiceClient) GetTripsByProximity(ctx context.Context, in *GetTrip
 type TripServiceServer interface {
 	CalculateTripById(context.Context, *TripRequest) (*TripResponse, error)
 	CalculateNewTrip(context.Context, *TripRequest) (*TripResponse, error)
-	GetTimeInNYC(context.Context, *NoInput) (*StringResponse, error)
 	CreateTripRequest(context.Context, *TripRequest) (*TripRequest, error)
 	GetTripsByProximity(context.Context, *GetTripsByProximityRequest) (*GetTripsByProximityResponse, error)
 	mustEmbedUnimplementedTripServiceServer()
@@ -111,9 +99,6 @@ func (UnimplementedTripServiceServer) CalculateTripById(context.Context, *TripRe
 }
 func (UnimplementedTripServiceServer) CalculateNewTrip(context.Context, *TripRequest) (*TripResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CalculateNewTrip not implemented")
-}
-func (UnimplementedTripServiceServer) GetTimeInNYC(context.Context, *NoInput) (*StringResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTimeInNYC not implemented")
 }
 func (UnimplementedTripServiceServer) CreateTripRequest(context.Context, *TripRequest) (*TripRequest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTripRequest not implemented")
@@ -170,24 +155,6 @@ func _TripService_CalculateNewTrip_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TripService_GetTimeInNYC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NoInput)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TripServiceServer).GetTimeInNYC(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TripService_GetTimeInNYC_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TripServiceServer).GetTimeInNYC(ctx, req.(*NoInput))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _TripService_CreateTripRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TripRequest)
 	if err := dec(in); err != nil {
@@ -238,10 +205,6 @@ var TripService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CalculateNewTrip",
 			Handler:    _TripService_CalculateNewTrip_Handler,
-		},
-		{
-			MethodName: "GetTimeInNYC",
-			Handler:    _TripService_GetTimeInNYC_Handler,
 		},
 		{
 			MethodName: "CreateTripRequest",
