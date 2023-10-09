@@ -38,7 +38,7 @@ func CreateMongoUser(client *mongo.Client, db string, user string, pass string, 
 }
 
 func main() {
-	client, err := database.ConnectToMongoDB("localhost", "27017", "root", "Password1!")
+	client, err := database.ConnectToMongoDB(context.Background(), "localhost", "27017", "root", "Password1!")
 	common.Check(err)
 	defer client.Disconnect(context.Background())
 

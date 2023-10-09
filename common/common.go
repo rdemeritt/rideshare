@@ -9,7 +9,7 @@ import (
 
 const (
 	// Replace with your own API key
-	GoogleMapsAPIKey = "***REMOVED***"
+	GoogleMapsAPIKey = ""
 	MetersInMile     = 1609.344
     MetersInKilometer = 1000
 )
