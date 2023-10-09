@@ -57,7 +57,9 @@ func NewEmptyTrip() *Trip {
 }
 
 func (t *Trip) PopulateTripDetails(dmr *maps.DistanceMatrixResponse) {
-	log.Debugf("Populating trip details")
+	log.Debugf("PopulateTripDetails start")
+	defer log.Debugf("PopulateTripDetails end")
+	
 	t.Details.DriverLocationToPassengerStartDistance = dmr.Rows[0].Elements[0].Distance.HumanReadable
 	t.Details.DriverLocationToPassengerStartDuration = dmr.Rows[0].Elements[0].Duration
 	t.Details.PassengerStartToPassengerEndDistance = dmr.Rows[1].Elements[1].Distance.HumanReadable
