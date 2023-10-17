@@ -2,26 +2,29 @@ package servers
 
 import (
 	"context"
-	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 	"net"
 	"rideshare/common"
+	"rideshare/config"
 	"rideshare/database"
 	"rideshare/gmapsclient"
 	trippb "rideshare/proto/trip"
 	trip "rideshare/trip"
+
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 )
 
 type server struct {
+	config.Config
 	trippb.TripServiceServer
 }
 
-func StartTripServer(port string) {
+func StartTripServer(conf config.Config) {
 	log.Info("StartTripServer start")
 	defer log.Info("StartTripServer end")
 
 	// Listen on the specified port
-	lis, err := net.Listen("tcp", ":"+port)
+	lis, err := net.Listen("tcp", ":"+conf.GRPCPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -30,10 +33,10 @@ func StartTripServer(port string) {
 	grpcServer := grpc.NewServer()
 
 	// Register the TripService server
-	trippb.RegisterTripServiceServer(grpcServer, &server{})
+	trippb.RegisterTripServiceServer(grpcServer, &server{Config: conf})
 
 	// Start the gRPC server
-	log.Debugf("Starting gRPC server on port %s", port)
+	log.Debugf("Starting gRPC server on port %s", conf.GRPCPort)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
@@ -77,7 +80,7 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	t := trip.NewTrip(req.PassengerStart, req.PassengerEnd)
 
 	// Create a new maps client
-	gMapsClient, err := gmapsclient.NewMapsClient()
+	gMapsClient, err := gmapsclient.NewMapsClient(s.Config.GMapsAPIKey)
 	common.Check(err)
 
 	// set the distance units
@@ -106,7 +109,9 @@ func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsBy
 	defer client.Disconnect(ctx)
 
 	var res *trippb.GetTripsByProximityResponse
-	res, err = trip.GetTripsInProximity(ctx, client, req.DriverLocation, req.Distance, req.DistanceUnits)
+
+	log.Debugf("GetTripsByProximity config: %v", s.Config)
+	res, err = trip.GetTripsInProximity(ctx, s.Config.GMapsAPIKey, client, req.DriverLocation, req.Distance, req.DistanceUnits)
 	common.Check(err)
 
 	return res, nil
@@ -118,7 +123,7 @@ func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) 
 	t := trip.NewTrip(req.PassengerStart, req.PassengerEnd)
 
 	// Create a new maps client
-	client, err := gmapsclient.NewMapsClient()
+	client, err := gmapsclient.NewMapsClient(s.Config.GMapsAPIKey)
 	common.Check(err)
 
 	dmr, err := trip.GetTripRequestDistanceMatrix(ctx, client, req)

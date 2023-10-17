@@ -1,12 +1,13 @@
 package gmapsclient
 
 import (
-	"googlemaps.github.io/maps"
 	"rideshare/common"
+
+	"googlemaps.github.io/maps"
 )
 
-func NewMapsClient() (*maps.Client, error) {
-	client, err := maps.NewClient(maps.WithAPIKey(common.GoogleMapsAPIKey))
+func NewMapsClient(key string) (*maps.Client, error) {
+	client, err := maps.NewClient(maps.WithAPIKey(key))
 	common.Check(err)
 
 	return client, nil

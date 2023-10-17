@@ -58,7 +58,7 @@ func GetTripRequestDistanceMatrix(ctx context.Context, client *maps.Client, req 
 }
 
 // query mongodb for trips that are in pending and within the specified proximity
-func GetTripsInProximity(ctx context.Context, client *mongo.Client, driver_location string, proximity_distance string, units string) (*trippb.GetTripsByProximityResponse, error) {
+func GetTripsInProximity(ctx context.Context, gmaps_api_key string, client *mongo.Client, driver_location string, proximity_distance string, units string) (*trippb.GetTripsByProximityResponse, error) {
 	log.Info("GetTripsInProximity start")
 	defer log.Info("GetTripsInProximity end")
 
@@ -72,7 +72,8 @@ func GetTripsInProximity(ctx context.Context, client *mongo.Client, driver_locat
 	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
 
 	// get google maps client
-	gmapsClient, err := gmapsclient.NewMapsClient()
+	log.Debugf("GetTripsInProximity gmaps_api_key: %s", gmaps_api_key)
+	gmapsClient, err := gmapsclient.NewMapsClient(gmaps_api_key)
 	if err != nil {
 		log.Errorf("failed to create google maps client: %v", err)
 		return nil, err

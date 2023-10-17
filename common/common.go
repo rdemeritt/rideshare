@@ -8,8 +8,6 @@ import (
 )
 
 const (
-	// Replace with your own API key
-	GoogleMapsAPIKey = ""
 	MetersInMile     = 1609.344
     MetersInKilometer = 1000
 )
