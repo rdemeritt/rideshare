@@ -72,7 +72,6 @@ func GetTripsInProximity(ctx context.Context, gmaps_api_key string, client *mong
 	log.Debugf("GetTripsInProximity pendingTrips: %v", pendingTrips)
 
 	// get google maps client
-	log.Debugf("GetTripsInProximity gmaps_api_key: %s", gmaps_api_key)
 	gmapsClient, err := gmapsclient.NewMapsClient(gmaps_api_key)
 	if err != nil {
 		log.Errorf("failed to create google maps client: %v", err)
