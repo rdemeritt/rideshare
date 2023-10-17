@@ -4,6 +4,7 @@ import (
 	"context"
 	"rideshare/args"
 	"rideshare/common"
+	"rideshare/config"
 	"rideshare/gmapsclient"
 	logger "rideshare/log"
 	"rideshare/servers"
@@ -20,20 +21,21 @@ func main() {
 	// Parse command line flags
 	argv := args.Args{}
 	argv.ParseCommandLineFlags()
+	conf := config.NewConfig(argv)
 
 	// set log_level
-	logger.SetLogLevel(argv.LogLevel)
+	logger.SetLogLevel(conf.LogLevel)
 
 	// Check if the gRPC port is specified
-	if argv.GRPCPort != "" {
+	if conf.GRPCPort != "" {
 		// start the TripServer	service
 		// tripServer := servers.NewTripServer()
-		log.Infof("Starting TripServer on port %s", argv.GRPCPort)
-		servers.StartTripServer(argv.GRPCPort)
+		log.Infof("Starting TripServer on port %s", conf.GRPCPort)
+		servers.StartTripServer(*conf)
 
 	} else {
 		// Create a new maps client
-		client, err := gmapsclient.NewMapsClient()
+		client, err := gmapsclient.NewMapsClient(conf.GMapsAPIKey)
 		common.Check(err)
 
 		// Create a new Trip object
