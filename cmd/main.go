@@ -28,6 +28,10 @@ func main() {
 
 	// Check if the gRPC port is specified
 	if conf.GRPCPort != "" {
+		// check to make sure we have a valid gmaps api key
+		if conf.GMapsAPIKey == "" {
+			log.Fatal("GMapsAPIKey is required")
+		}
 		// start the TripServer	service
 		// tripServer := servers.NewTripServer()
 		log.Infof("Starting TripServer on port %s", conf.GRPCPort)
