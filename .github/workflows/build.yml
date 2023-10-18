@@ -24,8 +24,8 @@ jobs:
         run: go build -v ./...
 
       # Output build artifacts to /github/workspace on the container.
-      - name: Containerized Build
-        uses: ./.github/actions/my-container-action
+      # - name: Containerized Build
+      #   uses: ./.github/actions/my-container-action
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
