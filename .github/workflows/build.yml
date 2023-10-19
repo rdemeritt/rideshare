@@ -13,7 +13,8 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       
       # Output build artifacts to /github/workspace on the container.
       - name: Containerized Build
