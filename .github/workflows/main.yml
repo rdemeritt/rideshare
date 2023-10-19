@@ -1,6 +1,4 @@
-
-name:
-    hello-world-docker-action
+name: hello-world-docker-action
 
 on:
   push:
