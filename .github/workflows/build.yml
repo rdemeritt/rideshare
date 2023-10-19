@@ -18,7 +18,7 @@ jobs:
       
       # Output build artifacts to /github/workspace on the container.
       - name: Containerized Build
-        uses: ./.github/actions/my-container-action
+        uses: docker/build
 
       - name: Set up Go
         uses: actions/setup-go@v4
