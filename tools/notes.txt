@@ -1,14 +1,14 @@
-grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "10330 shallowford rd, roswell,ga", "passenger_end": "homedepot 30075", "driver_location": "brusters woodstock rd, roswell,ga", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/CalculateNewTrip
+grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "shallowford rd, roswell,ga", "passenger_end": "homedepot 30075", "driver_location": "brusters woodstock rd, roswell,ga", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/CalculateNewTrip
 
-grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "10330 shallowford rd, roswell,ga", "passenger_end": "homedepot 30075"}' localhost:8080 rideshare.TripService/CreateTripRequest
+grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "shallowford rd, roswell,ga", "passenger_end": "homedepot 30075"}' localhost:8080 rideshare.TripService/CreateTripRequest
 
-grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "10330 shallowford rd, roswell,ga", "passenger_end": "wichita, ks 67218"}' localhost:8080 rideshare.TripService/CreateTripRequest
+grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "shallowford rd, roswell,ga", "passenger_end": "wichita, ks 67218"}' localhost:8080 rideshare.TripService/CreateTripRequest
 
 grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "chikfila dallas, ga", "passenger_end": "wichita, ks 67218"}' localhost:8080 rideshare.TripService/CreateTripRequest
 
 grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "Dalton, GA", "passenger_end": "huntsville, al"}' localhost:8080 rideshare.TripService/CreateTripRequest
 
-grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "10330 shallowford rd, roswell,ga", "passenger_end": "wichita, ks 67218", "driver_location": "brusters woodstock rd, roswell,ga", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/CalculateNewTrip
+grpcurl -proto proto/*.proto -plaintext -d '{"passenger_start": "shallowford rd, roswell,ga", "passenger_end": "wichita, ks 67218", "driver_location": "brusters woodstock rd, roswell,ga", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/CalculateNewTrip
 
 grpcurl -proto proto/*.proto -plaintext -d '{"trip_id": "d535588d-66bd-4735-b021-575932d5187e", "driver_location": "brusters woodstock rd, roswell,ga", "distance_units": "imperial"}' localhost:8080 rideshare.TripService/CalculateTripById
 
