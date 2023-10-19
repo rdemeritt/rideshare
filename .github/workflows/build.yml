@@ -24,9 +24,9 @@ jobs:
       - name: Build
         run: go build -v -o trip_server cmd/main.go
 
-      # Output build artifacts to /github/workspace on the container.
-      - name: Containerized Build
-        uses: ./docker/build
+      # # Output build artifacts to /github/workspace on the container.
+      # - name: Containerized Build
+      #   uses: ./docker/build
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
