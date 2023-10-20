@@ -16,6 +16,7 @@ RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.s
 RUN chmod +x install.sh && \
     chown builder:builder install.sh
 RUN sudo -u builder ./install.sh
+USER builder
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
