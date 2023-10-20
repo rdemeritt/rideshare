@@ -6,13 +6,14 @@ RUN yum install -y procps git make && \
 
 # install brew
 RUN useradd -m builder
-USER builder
 # RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
 # RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
 #     brew update --force --quiet
 
 RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > install.sh
-RUN chmod +x install.sh && chown builder:builder install.sh
+RUN chmod +x install.sh && \
+    chown builder:builder install.sh
+USER builder
 RUN ./install.sh
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
