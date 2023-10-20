@@ -12,7 +12,7 @@ USER builder
 #     brew update --force --quiet
 
 RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > install.sh
-RUN chmod +x install.sh
+RUN chmod +x install.sh && chown builder:builder install.sh
 RUN ./install.sh
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
