@@ -1,7 +1,7 @@
 # Container image that runs your code
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
-RUN yum install -y procps git make && \
+RUN yum install -y procps git make sudo && \
     yum clean all
 
 # install brew
