@@ -1,5 +1,5 @@
 logs.txt
 .DS_Store
 obsfuscate.txt
-*.pb
+*.pb.go
 trip_server
