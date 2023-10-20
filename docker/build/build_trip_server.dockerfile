@@ -6,7 +6,7 @@ RUN yum install -y procps git make sudo && \
 
 # install brew
 RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
-RUN eval "$(homebrew/bin/brew shellenv)" && \
+RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     brew update --force --quiet
 
 # RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > install.sh
