@@ -6,6 +6,7 @@ RUN yum install -y procps git make && \
 
 # install brew
 RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+RUN /bin/bash install.sh
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
