@@ -5,12 +5,14 @@ RUN yum install -y procps git make sudo && \
     yum clean all
 
 # install brew
-# RUN git clone https://github.com/Homebrew/brew homebrew
-# RUN mkdir -p /home/linuxbrew/.linuxbrew/bin
-RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > install.sh
-RUN chmod +x install.sh
-RUN sudo ./install.sh
-RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
+RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
+RUN eval "$(homebrew/bin/brew shellenv)" && \
+    brew update --force --quiet
+
+# RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > install.sh
+# RUN chmod +x install.sh
+# RUN ./install.sh
+# RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     brew install go emscripten protobuf && \
