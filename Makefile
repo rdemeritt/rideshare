@@ -1,8 +1,8 @@
 .PHONY: test trip_proto run_trip_server protoc clean mongo start_mongodb stop_mongodb clean_mongodb
 
-all: clean build mongo
+all: clean build_trip_server mongo
 
-build: protoc
+build_trip_server: protoc
 	go build -o trip_server cmd/main.go
 
 trip_proto: proto/trip.proto
