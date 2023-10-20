@@ -1,11 +1,13 @@
 # Container image that runs your code
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
-RUN yum install -y procps git make && \
+RUN yum install -y procps git make sudo && \
     yum clean all
 
 # install brew
 RUN useradd -m builder
+RUN echo "builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 # RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
 # RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
 #     brew update --force --quiet
@@ -14,7 +16,7 @@ RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.s
 RUN chmod +x install.sh && \
     chown builder:builder install.sh
 USER builder
-RUN ./install.sh
+RUN sudo ./install.sh
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
