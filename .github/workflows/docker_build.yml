@@ -21,7 +21,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./docker/build
-          file: ./docker/build/build.dockerfile
+          file: ./docker/build/build_trip_server.dockerfile
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
