@@ -25,6 +25,6 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: test_server_binary
+          name: trip_server_binary
           path: |
             trip_server
