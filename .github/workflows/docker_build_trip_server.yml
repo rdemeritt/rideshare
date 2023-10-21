@@ -20,7 +20,6 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@v2
         with:
-          push: true
           tags: build-trip-server:latest
           context: ./docker/build
           file: ./docker/build/build_trip_server.dockerfile
