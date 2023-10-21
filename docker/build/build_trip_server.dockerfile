@@ -17,11 +17,10 @@ RUN sudo -u builder ./install.sh
 
 # setup homebrew
 USER builder
-RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
 # install build dependencies
-RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+RUN eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) && \
     brew install go protobuf && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
     go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
