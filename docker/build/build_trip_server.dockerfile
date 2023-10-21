@@ -25,4 +25,4 @@ RUN eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
     go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
-ENTRYPOINT [ "eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" ]
+# ENTRYPOINT [ "eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" ]

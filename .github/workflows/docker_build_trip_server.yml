@@ -26,7 +26,12 @@ jobs:
           file: ./docker/build/build_trip_server.dockerfile
 
       - name: Build trip_server executable
-        run: docker run --rm -v $(pwd):/app -w /app build-trip-server go build -o trip_server ./cmd/main.go
+        uses: addnab/docker-run-action@v3
+        with:
+            image: build_trip_server:latest
+            options: -v ${{ github.workspace }}:/app -w /app
+            run: |
+                make build_trip_server
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
