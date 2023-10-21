@@ -6,7 +6,7 @@ RUN yum install -y procps git make sudo && \
     yum clean all
 
 # add builder user
-RUN useradd -m builder
+RUN useradd -m builder --uid 1001
 RUN echo "builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # install homebrew
