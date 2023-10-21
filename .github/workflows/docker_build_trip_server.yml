@@ -28,7 +28,7 @@ jobs:
       - name: Build trip_server executable
         uses: addnab/docker-run-action@v3
         with:
-            image: build_trip_server:latest
+            image: build-trip-server:latest
             options: -v ${{ github.workspace }}:/app -w /app
             run: |
                 make build_trip_server
