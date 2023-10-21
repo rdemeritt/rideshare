@@ -14,6 +14,7 @@ run_trip_server:
 	go run cmd/main.go -log-level debug -port 8080
 
 clean:
+	go clean
 	find proto -name "*.pb.go" -type f -delete
 	find . -name trip_server -type f -delete
 
