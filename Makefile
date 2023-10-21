@@ -1,5 +1,10 @@
 .PHONY: test trip_proto run_trip_server protoc clean mongo start_mongodb stop_mongodb clean_mongodb
 
+all: clean build_trip_server mongo
+
+build_trip_server:
+	go build -o trip_server cmd/main.go
+
 trip_proto: proto/trip.proto
 	protoc --go_out=./proto --go-grpc_out=./proto proto/trip.proto
 
@@ -9,7 +14,9 @@ run_trip_server:
 	go run cmd/main.go -log-level debug -port 8080
 
 clean:
+	go clean
 	find proto -name "*.pb.go" -type f -delete
+	find . -name trip_server -type f -delete
 
 test:
 	cd test; \
@@ -17,7 +24,7 @@ test:
 
 # mongo functions
 mongo:
-	docker build -t rideshare-mongodb .
+	docker build -t rideshare-mongodb -f docker/mongo/mongo.dockerfile docker/mongo/.
 
 start_mongodb:
 	docker compose --project-name rideshare -f docker/mongo/mongo-compose.yaml up -d --remove-orphans
