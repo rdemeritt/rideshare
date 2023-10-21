@@ -29,9 +29,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
             image: build-trip-server:latest
-            options: -v ${{ github.workspace }}:/app -w /app
+            options: --rm -v ${{ github.workspace }}:/app -w /app
             run: |
-                make build_trip_server
+              eval '$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)'
+              make build_trip_server
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
