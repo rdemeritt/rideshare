@@ -31,7 +31,7 @@ jobs:
             image: build-trip-server:latest
             options: --rm -v ${{ github.workspace }}:/app -w /app
             run: |
-              eval '$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)'; make build_trip_server
+              make build_trip_server
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
