@@ -2,7 +2,7 @@
 
 all: clean build_trip_server mongo
 
-build_trip_server: protoc
+build_trip_server:
 	go build -o trip_server cmd/main.go
 
 trip_proto: proto/trip.proto
