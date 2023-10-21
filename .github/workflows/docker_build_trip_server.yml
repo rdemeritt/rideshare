@@ -1,5 +1,5 @@
 
-name: Docker Build
+name: Build trip_server
 
 on:
   push:
@@ -36,5 +36,5 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: workspace_artifacts
+          name: trip_server_binary
           path: ${{ github.workspace }}
