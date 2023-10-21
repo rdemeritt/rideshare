@@ -10,20 +10,25 @@ RUN useradd -m builder --uid 1001
 RUN echo "builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # install homebrew
-RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > install.sh
-RUN chmod +x install.sh && \
-    chown builder:builder install.sh
-RUN sudo -u builder ./install.sh
+RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > homebrew_installer.sh
+RUN chmod +x homebrew_installer.sh
+RUN chown builder:builder homebrew_installer.sh
+RUN sudo -u builder ./homebrew_installer.sh
 
 # setup homebrew
 USER builder
+ENV PATH $PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
-# install build dependencies
-RUN eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) && \
-    brew install go protobuf && \
-    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
-    go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN brew install go protobuf
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
-ENV PATH $PATH:/home/linuxbrew/.linuxbrew/bin
+# install build dependencies
+# RUN eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) && \
+#     brew install go protobuf && \
+#     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
+#     go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
+
 # ENTRYPOINT [ "eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" ]
