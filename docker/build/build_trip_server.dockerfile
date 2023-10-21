@@ -17,7 +17,7 @@ RUN sudo -u builder ./install.sh
 
 # setup homebrew
 USER builder
-RUN PATH=/dummy:$PATH
+RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
 # install build dependencies
