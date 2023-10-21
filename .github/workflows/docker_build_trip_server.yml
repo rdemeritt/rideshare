@@ -17,11 +17,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build and Push
+      - name: Build docker image
         uses: docker/build-push-action@v2
         with:
+          push: true
+          tags: build-trip-server:latest
           context: ./docker/build
           file: ./docker/build/build_trip_server.dockerfile
+
+      - name: Build trip_server executable
+        run: docker run --rm -v $(pwd):/app -w /app build-trip-server go build -o trip_server ./cmd/main.go
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
