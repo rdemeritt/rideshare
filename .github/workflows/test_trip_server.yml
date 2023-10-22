@@ -43,7 +43,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: trip_server_binary
-          path: .trip_server
+          path: trip_server
 
       - name: Build trip_server server image
         uses: docker/build-push-action@v2
