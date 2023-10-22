@@ -45,7 +45,7 @@ jobs:
           load: true
           tags: trip-server:latest
           context: ./docker/servers/trip_server/.
-          file: ./docker/servers/trip_server/trip_server.dockerfile
+          file: ./docker/servers/trip-server/trip_server.dockerfile
 
       - name: Build mongodb image
         uses: docker/build-push-action@v2
