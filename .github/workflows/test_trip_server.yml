@@ -69,4 +69,4 @@ jobs:
         run: |
           minikube start
           minikube addons enable ingress
-          minikube kubectl -- apply -f ./k8s/test_env.yaml
+          minikube kubectl -- apply -f ./deploy/k8s/test_env.yaml
