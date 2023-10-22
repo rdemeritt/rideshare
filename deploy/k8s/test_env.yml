@@ -23,7 +23,6 @@ spec:
                       requests:
                           cpu: 25m
                           memory: 10Mi
-                  command: ["python3"]
                   ports:
                       - containerPort: 8080
 
@@ -43,11 +42,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: example
+    name: rideshare_test
 spec:
     type: NodePort
     selector:
-        app: example
+        app: trip_server
     ports:
         - port: 8080
           targetPort: 8080
