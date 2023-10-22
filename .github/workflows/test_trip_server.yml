@@ -52,6 +52,8 @@ jobs:
         with:
           load: true
           tags: trip-server:latest
+          secrets: |
+            "gmapsapikey=${{ secrets.GMAPSAPIKEY }}"
           context: ./docker/servers/trip-server/.
           file: ./docker/servers/trip-server/trip_server.dockerfile
 
