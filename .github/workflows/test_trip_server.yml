@@ -69,7 +69,9 @@ jobs:
     steps:
       - name: Deploy testenv to minikube
         run: |
-          eval $(minikube docker-env)
           minikube start
+          eval $(minikube -p minikube docker-env)
           minikube addons enable ingress
+          minikube image load trip-server:latest
+          minikube image load mongodb:latest
           minikube kubectl -- apply -f ./deploy/k8s/test_env.yml

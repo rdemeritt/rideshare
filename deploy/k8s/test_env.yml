@@ -14,7 +14,7 @@ spec:
         spec:
             containers:
                 - name: trip-server
-                  imagePullPolicy: Always
+                  imagePullPolicy: Never
                   image: trip-server:latest
                   resources:
                       limits:
@@ -27,7 +27,7 @@ spec:
                       - containerPort: 8080
 
                 - name: mongodb
-                  imagePullPolicy: Always
+                  imagePullPolicy: Never
                   image: mongodb:latest
                   resources:
                       limits:
