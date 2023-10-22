@@ -37,4 +37,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: trip_server_binary
-          path: ${{ github.workspace }}
+          # path: ${{ github.workspace }}
+          path: ./trip_server
