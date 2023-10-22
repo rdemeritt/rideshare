@@ -47,6 +47,8 @@ jobs:
 
       - name: Build trip_server server image
         uses: docker/build-push-action@v2
+        env:
+          GMAPS_API_KEY: ${{ secrets.GMAPSAPIKEY }}
         with:
           load: true
           tags: trip-server:latest
