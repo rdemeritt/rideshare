@@ -15,7 +15,7 @@ spec:
             containers:
                 - name: trip-server
                   imagePullPolicy: Always
-                  image: trip-server:latest
+                  image: local/trip-server:latest
                   resources:
                       limits:
                           cpu: 50m
@@ -28,7 +28,7 @@ spec:
 
                 - name: mongodb
                   imagePullPolicy: Always
-                  image: mongodb:latest
+                  image: local/mongodb:latest
                   resources:
                       limits:
                           cpu: 50m
