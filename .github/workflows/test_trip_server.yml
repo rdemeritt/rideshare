@@ -39,12 +39,6 @@ jobs:
           name: trip_server_binary
           path: ./trip_server
 
-      - name: Download trip_server binary
-        uses: actions/download-artifact@v3
-        with:
-          name: trip_server_binary
-          path: trip_server
-
       - name: Build trip_server server image
         uses: docker/build-push-action@v2
         with:
