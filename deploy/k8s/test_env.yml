@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: test_env
+    name: test-env
 spec:
     selector:
         matchLabels:
-            app: rideshare_test
+            app: rideshare-test
     replicas: 1
     template:
         metadata:
             labels:
-                app: rideshare_test
+                app: rideshare-test
         spec:
             containers:
                 - name: trip-server
@@ -42,11 +42,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: rideshare_test
+    name: rideshare-test
 spec:
     type: NodePort
     selector:
-        app: trip_server
+        app: trip-server
     ports:
         - port: 8080
           targetPort: 8080
