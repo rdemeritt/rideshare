@@ -51,7 +51,9 @@ jobs:
           GMAPSAPIKEY: ${{ secrets.GMAPSAPIKEY }}
         with:
           load: true
-          tags: trip-server:${{ github.sha }}
+          tags: |
+            trip-server:${{ github.sha }}
+            trip-server:latest
           secrets: |
             "gmapsapikey=${{ secrets.GMAPSAPIKEY }}"
           context: ./docker/servers/trip-server/.
@@ -61,7 +63,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           load: true
-          tags: mongodb:${{ github.sha }}
+          tags: |
+            mongodb:${{ github.sha }}
+            mongodb:latest
           context: ./docker/mongo/.
           file: ./docker/mongo/mongo.dockerfile
   
@@ -74,6 +78,6 @@ jobs:
           minikube start
           eval $(minikube -p minikube docker-env)
           minikube addons enable ingress
-          minikube image load trip-server:${{ github.sha }}
-          minikube image load mongodb:${{ github.sha }}
+          minikube image load trip-server:latest
+          minikube image load mongodb:latest
           minikube kubectl -- apply -f ./deploy/k8s/test_env.yml

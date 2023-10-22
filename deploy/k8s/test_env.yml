@@ -15,7 +15,7 @@ spec:
             containers:
                 - name: trip-server
                   imagePullPolicy: Never
-                  image: trip-server:${{ github.sha }}
+                  image: trip-server:latest
                   resources:
                       limits:
                           cpu: 50m
@@ -28,7 +28,7 @@ spec:
 
                 - name: mongodb
                   imagePullPolicy: Never
-                  image: mongodb:${{ github.sha }}
+                  image: mongodb:latest
                   resources:
                       limits:
                           cpu: 50m
