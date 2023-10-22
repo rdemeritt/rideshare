@@ -44,7 +44,7 @@ jobs:
         with:
           load: true
           tags: trip-server:latest
-          context: ./docker/servers/trip_server/.
+          context: ./docker/servers/trip-server/.
           file: ./docker/servers/trip-server/trip_server.dockerfile
 
       - name: Build mongodb image
