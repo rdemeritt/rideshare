@@ -67,8 +67,9 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
-      - name: Deploy test_env to minikube
+      - name: Deploy testenv to minikube
         run: |
+          eval $(minikube docker-env)
           minikube start
           minikube addons enable ingress
           minikube kubectl -- apply -f ./deploy/k8s/test_env.yml
