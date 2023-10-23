@@ -83,4 +83,5 @@ jobs:
           eval $(minikube -p minikube docker-env)
           minikube image load trip-server:test
           minikube image load mongodb:test
-          minikube kubectl -- apply -f ./deploy/k8s/test_env.yml
+          minikube kubectl -- apply -f ./deploy/k8s/trip_server_test.yaml
+          minikube kubectl -- apply -f ./deploy/k8s/mongodb_test.yaml
