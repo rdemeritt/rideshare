@@ -20,6 +20,7 @@ USER builder
 ENV PATH $PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
-RUN brew install go protobuf
-RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN brew install go
+# RUN brew install go protobuf
+# RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+# RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
