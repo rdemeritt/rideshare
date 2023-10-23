@@ -1,0 +1,83 @@
+
+name: Test trip_server
+
+on:
+  push:
+    branches: ["test_env"]
+  pull_request:
+    branches: ["test_env"]
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build docker image to build trip_server
+        uses: docker/build-push-action@v2
+        with:
+          load: true
+          tags: build-trip-server:${{ github.sha }}
+          context: ./docker/build
+          file: ./docker/build/build_trip_server.dockerfile
+
+      - name: Build trip_server executable
+        uses: addnab/docker-run-action@v3
+        with:
+            image: build-trip-server:${{ github.sha }}
+            options: --rm -v ${{ github.workspace }}:/app -w /app
+            run: |
+              make build_trip_server
+
+      - name: Upload trip_server binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: trip_server_binary
+          path: ./trip_server
+
+      - name: Download trip_server binary
+        uses: actions/download-artifact@v2
+        with:
+          name: trip_server_binary
+          path: ./docker/servers/trip-server/trip_server
+
+      - name: Build trip_server server image
+        uses: docker/build-push-action@v2
+        env:
+          GMAPSAPIKEY: ${{ secrets.GMAPSAPIKEY }}
+        with:
+          load: true
+          tags: |
+            trip-server:${{ github.sha }}
+            trip-server:latest
+          secrets: |
+            "gmapsapikey=${{ secrets.GMAPSAPIKEY }}"
+          context: ./docker/servers/trip-server/.
+          file: ./docker/servers/trip-server/trip_server.dockerfile
+
+      - name: Build mongodb image
+        uses: docker/build-push-action@v2
+        with:
+          load: true
+          tags: |
+            mongodb:${{ github.sha }}
+            mongodb:latest
+          context: ./docker/mongo/.
+          file: ./docker/mongo/mongo.dockerfile
+  
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Deploy testenv to minikube
+        run: |
+          minikube start
+          eval $(minikube -p minikube docker-env)
+          minikube addons enable ingress
+          minikube image load trip-server:latest
+          minikube image load mongodb:latest
+          minikube kubectl -- apply -f ./deploy/k8s/test_env.yml
