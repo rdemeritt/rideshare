@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: mongodb
+    name: mongodb-test
 spec:
     selector:
         matchLabels:
@@ -12,24 +12,24 @@ spec:
             labels:
                 app: mongodb
         spec:
-        containers:
-        - name: mongodb
-        imagePullPolicy: Never
-        image: mongodb:test
-        resources:
-            limits:
-                cpu: 50m
-                memory: 100Mi
-            requests:
-                cpu: 25m
-                memory: 10Mi
-        ports:
-            - containerPort: 27017
+            containers:
+                - name: mongodb
+                  imagePullPolicy: Never
+                  image: mongodb:test
+                  resources:
+                      limits:
+                          cpu: 50m
+                          memory: 100Mi
+                      requests:
+                          cpu: 25m
+                          memory: 10Mi
+                  ports:
+                      - containerPort: 27017
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: mongodb-test
+    name: mongodb
 spec:
     type: NodePort
     selector:
