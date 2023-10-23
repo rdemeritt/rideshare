@@ -23,7 +23,7 @@ func TestCalculateNewTrip(t *testing.T) {
 
 	// Create a new TripRequest object
 	req := &trippb.TripRequest{
-		PassengerStart: "***REMOVED*** shallowford rd, roswell,ga",
+		PassengerStart: "10330 shallowford rd, roswell,ga",
 		PassengerEnd:   "homedepot 30075",
 		DriverLocation: "brusters woodstock rd, roswell,ga",
 		DistanceUnits:  "imperial",
@@ -58,7 +58,7 @@ func TestCreateTripRequest(t *testing.T) {
 
 	// Create a new TripRequest object
 	req := &trippb.TripRequest{
-		PassengerStart: "***REMOVED*** shallowford rd, roswell,ga",
+		PassengerStart: "10330 shallowford rd, roswell,ga",
 		PassengerEnd:   "homedepot 30075",
 		DriverLocation: "brusters woodstock rd, roswell,ga",
 		DistanceUnits:  "imperial",
