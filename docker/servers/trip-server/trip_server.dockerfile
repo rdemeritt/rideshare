@@ -9,7 +9,6 @@ RUN chmod +x /app/trip_server
 RUN chmod +x /entrypoint.sh
 
 RUN --mount=type=secret,id=gmapsapikey \
-    eval 'export GMAPS_API_KEY='$(cat /run/secrets/gmapsapikey); \
     cat /run/secrets/gmapsapikey > /app/gmapsapikey
 
 ENTRYPOINT [ "/entrypoint.sh" ]
