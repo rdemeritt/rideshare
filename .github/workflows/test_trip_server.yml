@@ -22,14 +22,17 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           load: true
-          tags: build-trip-server:${{ github.sha }}
+          # tags: build-trip-server:${{ github.sha }}
+          tags: golang-builder:${{ github.sha }}
           context: ./docker/build
-          file: ./docker/build/build_trip_server.dockerfile
+          # file: ./docker/build/build_trip_server.dockerfile
+          file: ./docker/build/golang_builder.dockerfile
 
       - name: Build trip_server executable
         uses: addnab/docker-run-action@v3
         with:
-            image: build-trip-server:${{ github.sha }}
+            # image: build-trip-server:${{ github.sha }}
+            image: golang-builder:${{ github.sha }}
             options: --rm -v ${{ github.workspace }}:/app -w /app
             run: |
               make build_trip_server
@@ -54,7 +57,7 @@ jobs:
             trip-server:${{ github.sha }}
             trip-server:test
           secrets: |
-            "gmapsapikey=${{ secrets.GMAPSAPIKEY }}"
+            "gmapsapikey=${{ secrets.GMAPS_API_KEY }}"
             "RS_DB_USER=${{ secrets.RS_DB_USER }}"
             "RS_DB_PASS=${{ secrets.RS_DB_PASS }}"
             "RS_DB_HOSTNAME=${{ secrets.RS_DB_HOSTNAME }}"
