@@ -27,6 +27,13 @@ func NewConfig(argv args.Args) *Config {
 	log.Infof("NewConfig start")
 	defer log.Infof("NewConfig end")
 
+	// get GRPC_PORT from environment variable
+	grpcPort := os.Getenv("GRPC_PORT")
+	// if we don't have a grpc port in environment variable, get it from command line
+	if grpcPort == "" {
+		grpcPort = argv.GRPCPort
+	}
+
 	// build config
 	gmapsAPIKey := os.Getenv("GMAPS_API_KEY")
 	// if we don't have a gmaps api key in environment variable, get it from command line
@@ -79,7 +86,7 @@ func NewConfig(argv args.Args) *Config {
 
 	config := Config{
 		LogLevel:    argv.LogLevel,
-		GRPCPort:    argv.GRPCPort,
+		GRPCPort:    grpcPort,
 		GMapsAPIKey: gmapsAPIKey,
 		Database:    db,
 	}

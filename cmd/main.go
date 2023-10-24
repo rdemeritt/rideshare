@@ -32,8 +32,8 @@ func main() {
 		if conf.GMapsAPIKey == "" {
 			log.Fatal("GMapsAPIKey is required")
 		}
+		
 		// start the TripServer	service
-		// tripServer := servers.NewTripServer()
 		log.Infof("Starting TripServer on port %s", conf.GRPCPort)
 		servers.StartTripServer(*conf)
 

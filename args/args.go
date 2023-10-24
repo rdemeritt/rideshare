@@ -34,13 +34,15 @@ func (a *Args) ParseCommandLineFlags() {
 
 	flag.StringVar(&a.GRPCPort, "port", "", "gRPC server port")
 
-	flag.StringVar(&a.GoogleMapsAPIKey, "gmaps-api-key", "", "Google Maps API Key")
+	flag.StringVar(&a.GRPCPort, "port", "", "gRPC server port (can be overridden with GRPC_PORT environment variable)")
 
-	flag.StringVar(&a.Database.Type, "db-type", "", "Database type")
-	flag.StringVar(&a.Database.Username, "db-user", "", "Database username")
-	flag.StringVar(&a.Database.Password, "db-pass", "!", "Database password")
-	flag.StringVar(&a.Database.Hostname, "db-hostname", "", "Database hostname")
-	flag.StringVar(&a.Database.Port, "db-port", "", "Database port")
+    flag.StringVar(&a.GoogleMapsAPIKey, "gmaps-api-key", "", "Google Maps API Key (can be overridden with GMAPS_API_KEY environment variable)")
+
+    flag.StringVar(&a.Database.Type, "db-type", "", "Database type (can be overridden with DB_TYPE environment variable)")
+    flag.StringVar(&a.Database.Username, "db-user", "", "Database username (can be overridden with DB_USER environment variable)")
+    flag.StringVar(&a.Database.Password, "db-pass", "!", "Database password (can be overridden with DB_PASS environment variable)")
+    flag.StringVar(&a.Database.Hostname, "db-hostname", "", "Database hostname (can be overridden with DB_HOSTNAME environment variable)")
+    flag.StringVar(&a.Database.Port, "db-port", "", "Database port (can be overridden with DB_PORT environment variable)")
 
 	// Parse command line flags
 	flag.Parse()

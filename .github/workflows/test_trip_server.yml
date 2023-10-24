@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+    environment: test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -54,6 +55,10 @@ jobs:
             trip-server:test
           secrets: |
             "gmapsapikey=${{ secrets.GMAPSAPIKEY }}"
+            "RS_DB_USER=${{ secrets.RS_DB_USER }}"
+            "RS_DB_PASS=${{ secrets.RS_DB_PASS }}"
+            "RS_DB_HOSTNAME=${{ vars.RS_DB_HOSTNAME }}"
+            "RS_DB_PORT=${{ vars.RS_DB_PORT }}"
           context: ./docker/servers/trip-server/.
           file: ./docker/servers/trip-server/trip_server.dockerfile
 
