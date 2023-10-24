@@ -51,7 +51,7 @@ func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest)
 	// set the status to pending
 	req.Status = "pending"
 	// connect to mongodb
-	client, err := database.GetMongoDBClient(ctx)
+	client, err := database.GetMongoDBClient(ctx, &s.Config.Database)
 	common.Check(err)
 	defer client.Disconnect(ctx)
 
@@ -67,7 +67,7 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	defer log.Info("CalculateTripById end")
 
 	// get TripRequest from mongodb
-	client, err := database.GetMongoDBClient(ctx)
+	client, err := database.GetMongoDBClient(ctx, &s.Config.Database)
 	common.Check(err)
 	defer client.Disconnect(ctx)
 
@@ -104,7 +104,7 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 
 func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsByProximityRequest) (*trippb.GetTripsByProximityResponse, error) {
 	// get mongo client
-	client, err := database.GetMongoDBClient(ctx)
+	client, err := database.GetMongoDBClient(ctx, &s.Config.Database)
 	common.Check(err)
 	defer client.Disconnect(ctx)
 

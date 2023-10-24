@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"rideshare/common"
+	"rideshare/config"
 	"rideshare/database"
 	_ "rideshare/log"
 	"time"
@@ -38,7 +39,13 @@ func CreateMongoUser(client *mongo.Client, db string, user string, pass string, 
 }
 
 func main() {
-	client, err := database.ConnectToMongoDB(context.Background(), "localhost", "27017", "root", "Password1!")
+	client, err := database.GetMongoDBClient(context.Background(), &config.Database{
+		Type:     "mongodb",
+		Username: "root",
+		Password: "Password1!",
+		Hostname: "localhost",
+		Port:     "27017"},
+	)
 	common.Check(err)
 	defer client.Disconnect(context.Background())
 

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"rideshare/config"
 	trippb "rideshare/proto/trip"
 
 	"github.com/google/uuid"
@@ -13,22 +14,17 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func GetMongoDBClient(ctx context.Context) (*mongo.Client, error) {
-	client, err := ConnectToMongoDB(ctx, "localhost", "27017", "root", "Password1!")
-	if err != nil {
-		log.Errorf("failed to connect to MongoDB: %v", err)
-		return nil, err
-	}
-
-	return client, nil
-}
-
-func ConnectToMongoDB(ctx context.Context, host string, port string, user string, pass string) (*mongo.Client, error) {
+func GetMongoDBClient(ctx context.Context, db_cfg *config.Database) (*mongo.Client, error) {
 	log.Info("ConnectToMongoDB start")
 	defer log.Info("ConnectToMongoDB end")
 
 	// Set client options
-	clientOptions := options.Client().ApplyURI("mongodb://" + user + ":" + pass + "@" + host + ":" + port)
+	clientOptions := options.Client().ApplyURI(
+		"mongodb://" + db_cfg.Username +
+			":" + db_cfg.Password +
+			"@" + db_cfg.Hostname +
+			":" + db_cfg.Port,
+	)
 
 	// Connect to MongoDB
 	client, err := mongo.Connect(ctx, clientOptions)
@@ -78,7 +74,7 @@ func GetTripRequestByID(ctx context.Context, client *mongo.Client, trip_id strin
 	return &tripRequest, nil
 }
 
-func GetPendingTrips(ctx context.Context, client *mongo.Client, results *[]*trippb.PendingTrip) (error) {
+func GetPendingTrips(ctx context.Context, client *mongo.Client, results *[]*trippb.PendingTrip) error {
 	log.Info("GetPendingTrips start")
 
 	// Get the trips collection
