@@ -57,8 +57,8 @@ jobs:
             "gmapsapikey=${{ secrets.GMAPSAPIKEY }}"
             "RS_DB_USER=${{ secrets.RS_DB_USER }}"
             "RS_DB_PASS=${{ secrets.RS_DB_PASS }}"
-            "RS_DB_HOSTNAME=${{ vars.RS_DB_HOSTNAME }}"
-            "RS_DB_PORT=${{ vars.RS_DB_PORT }}"
+            "RS_DB_HOSTNAME=${{ secrets.RS_DB_HOSTNAME }}"
+            "RS_DB_PORT=${{ secrets.RS_DB_PORT }}"
           context: ./docker/servers/trip-server/.
           file: ./docker/servers/trip-server/trip_server.dockerfile
 
