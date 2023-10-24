@@ -20,7 +20,7 @@ type Args struct {
 	DriverLocation   string
 	GRPCPort         string
 	GoogleMapsAPIKey string
-	Database		 Database
+	Database         Database
 }
 
 func (a *Args) ParseCommandLineFlags() {
@@ -36,12 +36,12 @@ func (a *Args) ParseCommandLineFlags() {
 
 	flag.StringVar(&a.GoogleMapsAPIKey, "gmaps-api-key", "", "Google Maps API Key")
 
-	flag.StringVar(&a.Database.Username, "db-type", "", "Database type")
+	flag.StringVar(&a.Database.Type, "db-type", "", "Database type")
 	flag.StringVar(&a.Database.Username, "db-user", "", "Database username")
-    flag.StringVar(&a.Database.Password, "db-pass", "!", "Database password")
-    flag.StringVar(&a.Database.Hostname, "db-hostname", "", "Database hostname")
+	flag.StringVar(&a.Database.Password, "db-pass", "!", "Database password")
+	flag.StringVar(&a.Database.Hostname, "db-hostname", "", "Database hostname")
 	flag.StringVar(&a.Database.Port, "db-port", "", "Database port")
-	
+
 	// Parse command line flags
 	flag.Parse()
 }

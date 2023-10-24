@@ -28,44 +28,44 @@ func NewConfig(argv args.Args) *Config {
 	defer log.Infof("NewConfig end")
 
 	// build config
-	gmapsAPIKey := argv.GoogleMapsAPIKey
-	// if we don't have a gmaps api key from command line, get it from environment variable
+	gmapsAPIKey := os.Getenv("GMAPS_API_KEY")
+	// if we don't have a gmaps api key in environment variable, get it from command line
 	if gmapsAPIKey == "" {
-		gmapsAPIKey = os.Getenv("GMAPS_API_KEY")
+		gmapsAPIKey = argv.GoogleMapsAPIKey
 	}
 
 	// setup database config
 	db := Database{}
 
-	dbType := strings.ToLower(argv.Database.Type)
+	dbType := strings.ToLower(os.Getenv("RS_DB_TYPE"))
 	if dbType == "" {
-		dbType = strings.ToLower(os.Getenv("RS_DB_TYPE"))
+		dbType = strings.ToLower(argv.Database.Type)
 	}
 
 	// if db type is mongodb, populate the rest of the fields
 	switch dbType {
 	case "mongodb":
 		// populate each feild from argv if the environment variable is not set
-		if argv.Database.Username == "" {
-			db.Username = os.Getenv("RS_DB_USER")
-		} else {
+		db.Username = os.Getenv("RS_DB_USER")
+		if db.Username == "" {
 			db.Username = argv.Database.Username
 		}
-		if argv.Database.Password == "" {
-			db.Password = os.Getenv("RS_DB_PASS")
-		} else {
+
+		db.Password = os.Getenv("RS_DB_PASS")
+		if db.Password == "" {
 			db.Password = argv.Database.Password
 		}
-		if argv.Database.Hostname == "" {
-			db.Hostname = os.Getenv("RS_DB_HOSTNAME")
-		} else {
+
+		db.Hostname = os.Getenv("RS_DB_HOSTNAME")
+		if db.Hostname == "" {
 			db.Hostname = argv.Database.Hostname
 		}
-		if argv.Database.Port == "" {
-			db.Port = os.Getenv("RS_DB_PORT")
-		} else {
+
+		db.Port = os.Getenv("RS_DB_PORT")
+		if db.Port == "" {
 			db.Port = argv.Database.Port
 		}
+
 		db = Database{
 			Type:     dbType,
 			Username: db.Username,

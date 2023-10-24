@@ -110,7 +110,6 @@ func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsBy
 
 	var res *trippb.GetTripsByProximityResponse
 
-	log.Debugf("GetTripsByProximity config: %v", s.Config)
 	res, err = trip.GetTripsInProximity(ctx, s.Config.GMapsAPIKey, client, req.DriverLocation, req.Distance, req.DistanceUnits)
 	common.Check(err)
 

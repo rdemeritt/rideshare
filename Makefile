@@ -11,7 +11,7 @@ trip_proto: proto/trip.proto
 protoc: trip_proto
 
 run_trip_server:
-	go run cmd/main.go -log-level debug -port 8080
+	go run cmd/main.go -log-level debug -port 8080 -db-user root -db-pass "Password1!" -db-hostname localhost -db-port 27017 -db-type mongodb
 
 clean:
 	go clean
