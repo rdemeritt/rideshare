@@ -14,8 +14,8 @@ RUN --mount=type=secret,id=GMAPS_API_KEY \
 RUN --mount=type=secret,id=RS_DB_USER \
     cat /run/secrets/RS_DB_USER > /app/RS_DB_USER
 
-RUN --mount=type=secret,id=RS_DB_PASSWORD \
-    cat /run/secrets/RS_DB_PASSWORD > /app/RS_DB_PASSWORD
+RUN --mount=type=secret,id=RS_DB_PASS \
+    cat /run/secrets/RS_DB_PASS > /app/RS_DB_PASS
 
 RUN --mount=type=secret,id=RS_DB_HOST \
     cat /run/secrets/RS_DB_HOST > /app/RS_DB_HOST
