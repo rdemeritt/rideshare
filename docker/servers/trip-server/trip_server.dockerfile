@@ -8,8 +8,8 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /app/trip_server
 RUN chmod +x /entrypoint.sh
 
-RUN --mount=type=secret,id=GMAPS_API_KEY \
-    cat /run/secrets/GMAPS_API_KEY > /app/GMAPS_API_KEY
+RUN --mount=type=secret,id=gmaps_api_key \
+    cat /run/secrets/gmaps_api_key > /app/GMAPS_API_KEY
 
 RUN --mount=type=secret,id=RS_DB_USER \
     cat /run/secrets/RS_DB_USER > /app/RS_DB_USER
