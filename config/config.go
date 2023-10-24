@@ -43,7 +43,8 @@ func NewConfig(argv args.Args) *Config {
 	}
 
 	// if db type is mongodb, populate the rest of the fields
-	if dbType == "mongodb" {
+	switch dbType {
+	case "mongodb":
 		// populate each feild from argv if the environment variable is not set
 		if argv.Database.Username == "" {
 			db.Username = os.Getenv("RS_DB_USER")
@@ -72,7 +73,7 @@ func NewConfig(argv args.Args) *Config {
 			Hostname: db.Hostname,
 			Port:     db.Port,
 		}
-	} else {
+	default:
 		log.Fatalf("Invalid database type: %s", argv.Database.Type)
 	}
 
