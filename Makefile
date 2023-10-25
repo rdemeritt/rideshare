@@ -41,5 +41,5 @@ apply_kube_deployment:
 	minikube kubectl -- apply -f ./deploy/k8s/mongodb_test.yaml
 
 delete_kube_deployment:
-	minikube kubectl -- delete -f ./deploy/k8s/trip_server_test.yaml
-	minikube kubectl -- delete -f ./deploy/k8s/mongodb_test.yaml
+	minikube kubectl -- delete -f ./deploy/k8s/trip_server_test.yaml --all
+	minikube kubectl -- delete -f ./deploy/k8s/mongodb_test.yaml --all
