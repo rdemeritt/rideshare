@@ -36,7 +36,7 @@ func (a *Args) ParseCommandLineFlags() {
 
     flag.StringVar(&a.GoogleMapsAPIKey, "gmaps-api-key", "", "Google Maps API Key (can be overridden with GMAPS_API_KEY environment variable)")
 
-    flag.StringVar(&a.Database.Type, "db-type", "", "Database type (can be overridden with DB_TYPE environment variable)")
+    flag.StringVar(&a.Database.Type, "db-type", "MongoDB", "Database type (can be overridden with DB_TYPE environment variable)")
     flag.StringVar(&a.Database.Username, "db-user", "", "Database username (can be overridden with DB_USER environment variable)")
     flag.StringVar(&a.Database.Password, "db-pass", "!", "Database password (can be overridden with DB_PASS environment variable)")
     flag.StringVar(&a.Database.Hostname, "db-hostname", "", "Database hostname (can be overridden with DB_HOSTNAME environment variable)")

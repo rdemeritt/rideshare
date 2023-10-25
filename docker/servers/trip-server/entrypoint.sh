@@ -1,17 +1,10 @@
 #!/bin/bash
 
-eval $(cat /app/GMAPS_API_KEY | sed 's/^/export GMAPS_API_KEY=/')
-
 # Load environment variables from files in /app/env
-for file in /app/env/*; do
-    name=$(basename "$file")
-    value=$(cat "$file")
-    export "$name"="$value"
-done
+source ./env.sh
 
 if [ -n "$GMAPS_API_KEY" ]; then
-    echo "GMAPS_API_KEY is set, removing secrets file"
-    rm -f /app/GMAPS_API_KEY
+    echo "GMAPS_API_KEY is set"
 else
     echo "GMAPS_API_KEY is not set"
 fi
