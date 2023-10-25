@@ -35,7 +35,7 @@ func NewConfig(argv args.Args) *Config {
 	}
 
 	// get GRPC_PORT from environment variable
-	grpcPort := os.Getenv("GRPC_PORT")
+	grpcPort := os.Getenv("RS_GRPC_PORT")
 	// if we don't have a grpc port in environment variable, get it from command line
 	if grpcPort == "" {
 		grpcPort = argv.GRPCPort
