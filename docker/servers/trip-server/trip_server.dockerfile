@@ -1,6 +1,8 @@
 # Container image that runs your code
-FROM alpine:latest
-RUN apk add bash
+# FROM alpine:latest
+# RUN apk add bash
+FROM golang:1.21
+RUN apt-get update
 
 COPY trip_server/trip_server /app/trip_server
 COPY entrypoint.sh /entrypoint.sh
