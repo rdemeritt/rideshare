@@ -1,6 +1,6 @@
 .PHONY: test trip_proto run_trip_server protoc clean mongo start_mongodb stop_mongodb clean_mongodb
 
-all: clean build_trip_server mongo
+all: clean build_trip_server mongodb
 
 build_trip_server:
 	go build -o trip_server cmd/main.go
@@ -23,7 +23,7 @@ test:
 	go test
 
 # mongo functions
-mongo:
+mongodb:
 	docker build -t rideshare-mongodb -f docker/mongo/mongo.dockerfile docker/mongo/.
 
 start_mongodb:
