@@ -22,6 +22,8 @@ var (
 func init() {
     flag.StringVar(&hostname, "hostname", "localhost", "MongoDB hostname")
     flag.StringVar(&port, "port", "27017", "MongoDB port")
+
+	flag.Parse()
 }
 
 func CreateDatabaseCollection(client *mongo.Client, db string, collection string) error {
