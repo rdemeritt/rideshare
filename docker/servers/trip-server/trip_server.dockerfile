@@ -13,6 +13,9 @@ RUN chmod +x /app/env.sh
 RUN chmod +x /app/entrypoint.sh
 
 RUN mkdir -p /app/env
+RUN --mount=type=secret,id=RS_LOG_LEVEL \
+    cat /run/secrets/RS_LOG_LEVEL > /app/env/RS_LOG_LEVEL
+
 RUN --mount=type=secret,id=GMAPS_API_KEY \
     cat /run/secrets/GMAPS_API_KEY > /app/env/GMAPS_API_KEY
 

@@ -9,4 +9,4 @@ else
     echo "GMAPS_API_KEY is not set"
 fi
 
-/app/trip_server -port 8080
+/app/trip_server

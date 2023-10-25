@@ -55,6 +55,7 @@ jobs:
             trip-server:test
           secrets: |
             "GMAPS_API_KEY=${{ secrets.GMAPS_API_KEY }}"
+            "RS_LOG_LEVEL=${{ secrets.RS_LOG_LEVEL }}"
             "RS_DB_USER=${{ secrets.RS_DB_USER }}"
             "RS_DB_PASS=${{ secrets.RS_DB_PASS }}"
             "RS_DB_HOST=${{ secrets.RS_DB_HOST }}"

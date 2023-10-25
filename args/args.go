@@ -25,7 +25,7 @@ type Args struct {
 
 func (a *Args) ParseCommandLineFlags() {
 	// Define command line flags
-	flag.StringVar(&a.LogLevel, "log-level", "info", "Logging level (debug, info, warn, error)")
+	flag.StringVar(&a.LogLevel, "log-level", "info", "Logging level (debug, info, warn, error) (can be overridden with RS_LOG_LEVEL environment variable)")
 
 	flag.StringVar(&a.PassengerStart, "start", "37.7749,-122.4194", "Starting coordinates")
 	flag.StringVar(&a.PassengerEnd, "end", "37.3352,-121.8811", "Ending coordinates")

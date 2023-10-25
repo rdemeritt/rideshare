@@ -27,6 +27,13 @@ func NewConfig(argv args.Args) *Config {
 	log.Infof("NewConfig start")
 	defer log.Infof("NewConfig end")
 
+	// get RS_LOG_LEVEL from environment variable
+	logLevel := os.Getenv("RS_LOG_LEVEL")
+	// if we don't have a log level in environment variable, get it from command line
+	if logLevel == "" {
+		logLevel = argv.LogLevel
+	}
+
 	// get GRPC_PORT from environment variable
 	grpcPort := os.Getenv("GRPC_PORT")
 	// if we don't have a grpc port in environment variable, get it from command line
@@ -85,7 +92,7 @@ func NewConfig(argv args.Args) *Config {
 	}
 
 	config := Config{
-		LogLevel:    argv.LogLevel,
+		LogLevel:    logLevel,
 		GRPCPort:    grpcPort,
 		GMapsAPIKey: gmapsAPIKey,
 		Database:    db,
