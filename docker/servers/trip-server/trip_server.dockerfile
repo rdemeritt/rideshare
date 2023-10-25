@@ -5,10 +5,12 @@ FROM golang:1.21
 RUN apt-get update
 
 COPY trip_server/trip_server /app/trip_server
-COPY entrypoint.sh /entrypoint.sh
+COPY env.sh /app/env.sh
+COPY entrypoint.sh /app/entrypoint.sh
 
 RUN chmod +x /app/trip_server
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /app/env.sh
+RUN chmod +x /app/entrypoint.sh
 
 RUN mkdir -p /app/env
 RUN --mount=type=secret,id=GMAPS_API_KEY \
@@ -26,4 +28,4 @@ RUN --mount=type=secret,id=RS_DB_HOST \
 RUN --mount=type=secret,id=RS_DB_PORT \
     cat /run/secrets/RS_DB_PORT > /app/env/RS_DB_PORT
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]

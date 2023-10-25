@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Load environment variables from files in /app/env
-source ./env.sh
+source /app/env.sh
 
 if [ -n "$GMAPS_API_KEY" ]; then
     echo "GMAPS_API_KEY is set"
