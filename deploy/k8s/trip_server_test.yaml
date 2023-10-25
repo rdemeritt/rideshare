@@ -30,7 +30,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: trip-server
+    name: trip-server-service
 spec:
     type: NodePort
     selector:
