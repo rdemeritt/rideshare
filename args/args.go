@@ -32,8 +32,6 @@ func (a *Args) ParseCommandLineFlags() {
 	flag.StringVar(&a.DistanceUnits, "units", "imperial", "Distance units (imperial, metric)")
 	flag.StringVar(&a.DriverLocation, "driver", "37.3352,-121.8811", "Driver coordinates")
 
-	flag.StringVar(&a.GRPCPort, "port", "", "gRPC server port")
-
 	flag.StringVar(&a.GRPCPort, "port", "", "gRPC server port (can be overridden with GRPC_PORT environment variable)")
 
     flag.StringVar(&a.GoogleMapsAPIKey, "gmaps-api-key", "", "Google Maps API Key (can be overridden with GMAPS_API_KEY environment variable)")
