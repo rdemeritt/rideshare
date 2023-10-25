@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"rideshare/common"
 	"rideshare/config"
 	"rideshare/database"
@@ -12,6 +13,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+var (
+    hostname string
+    port     string
+)
+
+func init() {
+    flag.StringVar(&hostname, "hostname", "localhost", "MongoDB hostname")
+    flag.StringVar(&port, "port", "27017", "MongoDB port")
+}
 
 func CreateDatabaseCollection(client *mongo.Client, db string, collection string) error {
 	// Create the database and collection
@@ -43,15 +54,16 @@ func main() {
 		Type:     "mongodb",
 		Username: "root",
 		Password: "Password1!",
-		Hostname: "localhost",
-		Port:     "27017"},
+        Hostname: hostname,
+        Port:     port,
+	},
 	)
 	common.Check(err)
 	defer client.Disconnect(context.Background())
 
-	// common.Check(CreateDatabaseCollection(client, "rideshare", "trips"))
+	common.Check(CreateDatabaseCollection(client, "rideshare", "trips"))
 	// common.Check(CreateMongoUser(client, "rideshare", "rideshare_admin", "Password1!", "readWrite"))
-	common.Check(CancelTripsWithID(client))
+	// common.Check(CancelTripsWithID(client))
 }
 
 // CancelTripsWithID sets the status of trips with non-null IDs to "canceled"
