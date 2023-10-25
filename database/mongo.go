@@ -22,6 +22,7 @@ func GetMongoDBClient(ctx context.Context, db_cfg *config.Database) (*mongo.Clie
 	mongoClientUri := "mongodb://" + db_cfg.Username + ":" + db_cfg.Password + "@" + db_cfg.Hostname + ":" + db_cfg.Port
 	log.Debugf("mongoClientUri: %s", mongoClientUri)
 	clientOptions := options.Client().ApplyURI(mongoClientUri)
+	
 	// Connect to MongoDB
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
