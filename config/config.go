@@ -63,7 +63,7 @@ func NewConfig(argv args.Args) *Config {
 			db.Password = argv.Database.Password
 		}
 
-		db.Hostname = os.Getenv("RS_DB_HOSTNAME")
+		db.Hostname = os.Getenv("RS_DB_HOST")
 		if db.Hostname == "" {
 			db.Hostname = argv.Database.Hostname
 		}
