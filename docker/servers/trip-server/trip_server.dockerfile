@@ -13,8 +13,8 @@ RUN chmod +x /app/env.sh
 RUN chmod +x /app/entrypoint.sh
 
 RUN mkdir -p /app/env
-RUN --mount=type=secret,id=RS_LOG_LEVEL \
-    cat /run/secrets/RS_LOG_LEVEL > /app/env/RS_LOG_LEVEL
+# RUN --mount=type=secret,id=RS_LOG_LEVEL \
+#     cat /run/secrets/RS_LOG_LEVEL > /app/env/RS_LOG_LEVEL
 
 RUN --mount=type=secret,id=RS_GRPC_PORT \
     cat /run/secrets/RS_GRPC_PORT > /app/env/RS_GRPC_PORT
@@ -31,7 +31,7 @@ RUN --mount=type=secret,id=RS_DB_PASS \
 RUN --mount=type=secret,id=RS_DB_HOST \
     cat /run/secrets/RS_DB_HOST > /app/env/RS_DB_HOST
 
-RUN --mount=type=secret,id=RS_DB_PORT \
-    cat /run/secrets/RS_DB_PORT > /app/env/RS_DB_PORT
+RUN --mount=type=secret,id=RS_LOG_LEVEL \
+    cat /run/secrets/RS_LOG_LEVEL > /app/env/RS_LOG_LEVEL
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]
