@@ -84,6 +84,7 @@ jobs:
       - name: Deploy testenv to minikube
         run: |
           eval $(minikube -p minikube docker-env)
+          alias kubectl='minikube kubectl --'
           minikube image load trip-server:test
           minikube image load mongodb:test
           make delete_kube_deployment

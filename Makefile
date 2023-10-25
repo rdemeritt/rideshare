@@ -37,9 +37,9 @@ clean_mongodb: stop_mongodb
 
 # kube functions
 apply_kube_deployment:
-	kubectl apply -f deploy/k8s/trip_server_test.yaml
-	kubectl apply -f deploy/k8s/mongodb_test.yaml
+	kubectl apply -f ./deploy/k8s/trip_server_test.yaml
+	kubectl apply -f ./deploy/k8s/mongodb_test.yaml
 
 delete_kube_deployment:
-	kubectl delete -f deploy/k8s/trip_server_test.yaml
-	kubectl delete -f deploy/k8s/mongodb_test.yaml
+	kubectl delete -f ./deploy/k8s/trip_server_test.yaml
+	kubectl delete -f ./deploy/k8s/mongodb_test.yaml
