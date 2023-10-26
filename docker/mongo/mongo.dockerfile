@@ -3,12 +3,13 @@ FROM mongo:latest
 # Copy the MongoDB configuration file to the container
 COPY mongod.conf /etc/mongod.conf
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY env.sh /app/env.sh
+RUN chmod +x /app/env.sh
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Expose the MongoDB port
 EXPOSE 27017
 
 # Start MongoDB with the custom configuration file
-# CMD ["mongod", "--config", "/etc/mongod.conf"]
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
