@@ -8,8 +8,8 @@ RUN chmod +x /app/env.sh
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-ENV MONGO_INITDB_ROOT_USERNAME=root
-ENV MONGO_INITDB_ROOT_PASSWORD=Password1!
+ENV MONGO_INITDB_ROOT_USERNAME="root"
+ENV MONGO_INITDB_ROOT_PASSWORD="Password1!"
 
 RUN env
 # Expose the MongoDB port
