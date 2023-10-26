@@ -15,6 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: delete minikube deployments
+        run: |
+          eval $(minikube -p minikube docker-env)
+          make delete_kube_deployment
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -86,8 +91,6 @@ jobs:
       - name: Deploy testenv to minikube
         run: |
           eval $(minikube -p minikube docker-env)
-          alias kubectl='minikube kubectl --'
           minikube image load trip-server:test
           minikube image load mongodb:test
-          make delete_kube_deployment
           make apply_kube_deployment
