@@ -6,7 +6,7 @@ import (
 	"rideshare/common"
 	"rideshare/config"
 	"rideshare/database"
-	_ "rideshare/log"
+	rslog "rideshare/log"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -24,6 +24,7 @@ func init() {
     flag.StringVar(&port, "port", "27017", "MongoDB port")
 
 	flag.Parse()
+	rslog.InitLog()
 }
 
 func CreateDatabaseCollection(client *mongo.Client, db string, collection string) error {
