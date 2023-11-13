@@ -55,8 +55,8 @@ func CreateMongoUser(client *mongo.Client, db string, user string, pass string, 
 func main() {
 	client, err := database.GetMongoDBClient(context.Background(), &config.Database{
 		Type:     "mongodb",
-		Username: "root",
-		Password: "Password1!",
+		// Username: "root",
+		// Password: "Password1!",
         Hostname: hostname,
         Port:     port,
 	},
