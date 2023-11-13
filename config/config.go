@@ -97,7 +97,7 @@ func NewConfig(argv args.Args) *Config {
 		GMapsAPIKey: gmapsAPIKey,
 		Database:    db,
 	}
-	log.Debugf("NewConfig config: %v", config)
+	log.Debugf("NewConfig config: %v", &config)
 
 	return &config
 }
