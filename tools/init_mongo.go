@@ -25,6 +25,7 @@ func init() {
 
 	flag.Parse()
 	rslog.InitLog()
+	rslog.SetLogLevel("debug")
 }
 
 func CreateDatabaseCollection(client *mongo.Client, db string, collection string) error {
