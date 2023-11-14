@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"flag"
-	"os/exec"
 	"math/rand"
+	"os/exec"
 	"rideshare/common"
 	"rideshare/config"
 	"rideshare/database"
@@ -18,13 +17,13 @@ import (
 )
 
 var (
-    hostname string
-    port     string
+	hostname string
+	port     string
 )
 
 func init() {
-    flag.StringVar(&hostname, "hostname", "localhost", "MongoDB hostname")
-    flag.StringVar(&port, "port", "27017", "MongoDB port")
+	flag.StringVar(&hostname, "hostname", "localhost", "MongoDB hostname")
+	flag.StringVar(&port, "port", "27017", "MongoDB port")
 
 	flag.Parse()
 	rslog.InitLog()
@@ -58,11 +57,11 @@ func CreateMongoUser(client *mongo.Client, db string, user string, pass string, 
 
 func main() {
 	client, err := database.GetMongoDBClient(context.Background(), &config.Database{
-		Type:     "mongodb",
+		Type: "mongodb",
 		// Username: "root",
 		// Password: "Password1!",
-        Hostname: hostname,
-        Port:     port,
+		Hostname: hostname,
+		Port:     port,
 	},
 	)
 	common.Check(err)
@@ -97,7 +96,6 @@ func CancelTripsWithID(client *mongo.Client) error {
 	return nil
 }
 
-
 type City struct {
 	Name    string
 	ZipCode string
@@ -108,10 +106,10 @@ type CityCo struct {
 }
 
 func PopulateDB(client *mongo.Client) {
-    // build a object containing 10 cities from Fulton County
-    fultonCo := CityCo{
-        Cities: generateFultonCoCities(),
-    }
+	// build a object containing 10 cities from Fulton County
+	fultonCo := CityCo{
+		Cities: generateFultonCoCities(),
+	}
 
 	// build a object containing 10 cities from Cobb County
 	cobbCo := CityCo{
@@ -129,45 +127,38 @@ func PopulateDB(client *mongo.Client) {
 			// grpcurl -proto ../proto/*.proto -plaintext -d '{"passenger_start": "Atlanta, 30303", "passenger_end": "Marietta, 30060"}' $(minikube ip):30080 rideshare.TripService/CreateTripRequest
 			// randomly chose citia or citib first
 
-			rand.Seed(time.Now().UnixNano())
 			items := []string{"citia", "citib"}
 			chosenItem := items[rand.Intn(len(items))]
-			cmd := exec.Cmd{}
+			cmd := &exec.Cmd{}
 			if chosenItem == "citia" {
-				cmd = exec.Command("grpcurl", "-proto ../proto/*.proto", "-plaintext", "-d '{\"passenger_start\": \"Atlanta, 30303\", \"passenger_end\": \"Marietta, 30060\"}'", "$(minikube ip):30080", "rideshare.TripService/CreateTripRequest")
+				cmd = exec.Command("grpcurl", "-proto ../proto/*.proto", "-plaintext", "-d '{\"passenger_start\": \""+citia.Name+","+citia.ZipCode+"\", \"passenger_end\": \""+citib.Name+","+citib.ZipCode+"\"}'", "$(minikube ip):30080", "rideshare.TripService/CreateTripRequest")
 			} else {
-				cmd = exec.Command("grpcurl", "-proto ../proto/*.proto", "-plaintext", "-d '{\"passenger_start\": \"Marietta, 30060\", \"passenger_end\": \"Atlanta, 30303\"}'", "$(minikube ip):30080", "rideshare.TripService/CreateTripRequest")
+				cmd = exec.Command("grpcurl", "-proto ../proto/*.proto", "-plaintext", "-d '{\"passenger_start\": \""+citib.Name+","+citib.ZipCode+"\", \"passenger_end\": \""+citia.Name+","+citia.ZipCode+"\"}'", "$(minikube ip):30080", "rideshare.TripService/CreateTripRequest")
 			}
 
 			err := cmd.Run()
 			if err != nil {
 				log.Fatal(err)
 			}
-				}
-			
-			}
-}
-
-// function to randomly mix the source and desitnation cities
-func mixCities(citiesa []City, citiesb []City) []City {
-
+		}
+	}
 }
 
 func generateFultonCoCities() []City {
-    cities := []City{
-        {Name: "Atlanta", ZipCode: "30303"},
-        {Name: "Roswell", ZipCode: "30075"},
-        {Name: "Alpharetta", ZipCode: "30009"},
-        {Name: "Johns Creek", ZipCode: "30022"},
-        {Name: "Sandy Springs", ZipCode: "30350"},
-        {Name: "Union City", ZipCode: "30291"},
-        {Name: "Milton", ZipCode: "30004"},
-        {Name: "East Point", ZipCode: "30344"},
-        {Name: "College Park", ZipCode: "30337"},
-        {Name: "Fairburn", ZipCode: "30213"},
-    }
+	cities := []City{
+		{Name: "Atlanta", ZipCode: "30303"},
+		{Name: "Roswell", ZipCode: "30075"},
+		{Name: "Alpharetta", ZipCode: "30009"},
+		{Name: "Johns Creek", ZipCode: "30022"},
+		{Name: "Sandy Springs", ZipCode: "30350"},
+		{Name: "Union City", ZipCode: "30291"},
+		{Name: "Milton", ZipCode: "30004"},
+		{Name: "East Point", ZipCode: "30344"},
+		{Name: "College Park", ZipCode: "30337"},
+		{Name: "Fairburn", ZipCode: "30213"},
+	}
 
-    return cities
+	return cities
 }
 
 func generateCobbCoCities() []City {
