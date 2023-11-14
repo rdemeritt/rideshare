@@ -105,7 +105,7 @@ type CityCo struct {
 	Cities []City
 }
 
-func PopulateDB(client *mongo.Client) {
+func PopulateDB() {
 	// build a object containing 10 cities from Fulton County
 	fultonCo := CityCo{
 		Cities: generateFultonCoCities(),
@@ -118,28 +118,37 @@ func PopulateDB(client *mongo.Client) {
 
 	// use grpcurl to insert the cities into the database by calling CreateTripRequest
 	// grpcurl -proto ../proto/*.proto -plaintext -d '{"passenger_start": "Atlanta, 30303", "passenger_end": "Marietta, 30060"}' $(minikube ip):30080 rideshare.TripService/CreateTripRequest
-	// itterate through fulltonCo and cobbCo and mix the cities together
-	// use grpcurl to insert the cities into the database by calling CreateTripRequest
-	// grpcurl -proto ../proto/*.proto -plaintext -d '{"passenger_start": "Atlanta, 30303", "passenger_end": "Marietta, 30060"}' $(minikube ip):30080 rideshare.TripService/CreateTripRequest
 	for _, citia := range fultonCo.Cities {
 		for _, citib := range cobbCo.Cities {
-			// use grpcurl to insert the cities into the database by calling CreateTripRequest
-			// grpcurl -proto ../proto/*.proto -plaintext -d '{"passenger_start": "Atlanta, 30303", "passenger_end": "Marietta, 30060"}' $(minikube ip):30080 rideshare.TripService/CreateTripRequest
 			// randomly chose citia or citib first
-
 			items := []string{"citia", "citib"}
 			chosenItem := items[rand.Intn(len(items))]
 			cmd := &exec.Cmd{}
 			if chosenItem == "citia" {
-				cmd = exec.Command("grpcurl", "-proto ../proto/*.proto", "-plaintext", "-d '{\"passenger_start\": \""+citia.Name+","+citia.ZipCode+"\", \"passenger_end\": \""+citib.Name+","+citib.ZipCode+"\"}'", "$(minikube ip):30080", "rideshare.TripService/CreateTripRequest")
+				cmd = exec.Command(
+					"grpcurl",
+					"-proto ../proto/*.proto", 
+					"-plaintext",
+					"-d '{\"passenger_start\": \""+citia.Name+","+citia.ZipCode+"\", \"passenger_end\": \""+citib.Name+","+citib.ZipCode+"\"}'",
+					"$(minikube ip):30080",
+					"rideshare.TripService/CreateTripRequest",
+				)
 			} else {
-				cmd = exec.Command("grpcurl", "-proto ../proto/*.proto", "-plaintext", "-d '{\"passenger_start\": \""+citib.Name+","+citib.ZipCode+"\", \"passenger_end\": \""+citia.Name+","+citia.ZipCode+"\"}'", "$(minikube ip):30080", "rideshare.TripService/CreateTripRequest")
+				cmd = exec.Command(
+					"grpcurl",
+					"-proto ../proto/*.proto",
+					"-plaintext",
+					"-d '{\"passenger_start\": \""+citib.Name+","+citib.ZipCode+"\", \"passenger_end\": \""+citia.Name+","+citia.ZipCode+"\"}'",
+					"$(minikube ip):30080",
+					"rideshare.TripService/CreateTripRequest",
+				)
 			}
 
 			err := cmd.Run()
 			if err != nil {
 				log.Fatal(err)
 			}
+			log.Debugf("cmd: %v", cmd)
 		}
 	}
 }
