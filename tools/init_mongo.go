@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"os/exec"
 	"rideshare/common"
-	"rideshare/config"
-	"rideshare/database"
+	_ "rideshare/config"
+	_ "rideshare/database"
 	rslog "rideshare/log"
 	"time"
 
@@ -56,18 +56,20 @@ func CreateMongoUser(client *mongo.Client, db string, user string, pass string, 
 }
 
 func main() {
-	client, err := database.GetMongoDBClient(context.Background(), &config.Database{
-		Type: "mongodb",
-		// Username: "root",
-		// Password: "Password1!",
-		Hostname: hostname,
-		Port:     port,
-	},
-	)
-	common.Check(err)
-	defer client.Disconnect(context.Background())
+	PopulateDB()
+	// client, err := database.GetMongoDBClient(context.Background(), &config.Database{
+	// 	Type: "mongodb",
+	// 	// Username: "root",
+	// 	// Password: "Password1!",
+	// 	Hostname: hostname,
+	// 	Port:     port,
+	// },
+	// )
+	// common.Check(err)
+	// defer client.Disconnect(context.Background())
 
-	common.Check(CreateDatabaseCollection(client, "rideshare", "trips"))
+	// common.Check(CreateDatabaseCollection(client, "rideshare", "trips"))
+
 	// common.Check(CreateMongoUser(client, "rideshare", "rideshare_admin", "Password1!", "readWrite"))
 	// common.Check(CancelTripsWithID(client))
 }
