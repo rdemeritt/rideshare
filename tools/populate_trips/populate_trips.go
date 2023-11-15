@@ -37,12 +37,12 @@ func main() {
 }
 
 func PopulateTrips() {
-	// build a object containing 10 cities from Fulton County
+	// build an object containing 10 cities from Fulton County
 	fultonCo := CityCo{
 		Cities: generateFultonCoCities(),
 	}
 
-	// build a object containing 10 cities from Cobb County
+	// build an object containing 10 cities from Cobb County
 	cobbCo := CityCo{
 		Cities: generateCobbCoCities(),
 	}
@@ -102,17 +102,6 @@ func generateFultonCoCities() []City {
 }
 
 func generateCobbCoCities() []City {
-	// Marietta, GA - 30060
-	// Smyrna, GA - 30080
-	// Kennesaw, GA - 30144
-	// Acworth, GA - 30101
-	// Powder Springs, GA - 30127
-	// Austell, GA - 30106
-	// Mableton, GA - 30126
-	// Vinings (Unincorporated), GA - 30339
-	// Cumberland (Unincorporated), GA - 30339
-	// Sandy Plains (Unincorporated), GA - 30075
-
 	cities := []City{
 		{Name: "Marietta", ZipCode: "30060"},
 		{Name: "Smyrna", ZipCode: "30080"},
