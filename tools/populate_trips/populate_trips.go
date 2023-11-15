@@ -1,4 +1,4 @@
-package populate_trips 
+package populateTrips 
 
 import (
 	"math/rand"
