@@ -1,4 +1,4 @@
-package populateTrips 
+package main 
 
 import (
 	"math/rand"
@@ -32,6 +32,9 @@ func init() {
 	rslog.SetLogLevel("debug")
 }
 
+func main() {
+	PopulateTrips()
+}
 
 func PopulateTrips() {
 	// build a object containing 10 cities from Fulton County
