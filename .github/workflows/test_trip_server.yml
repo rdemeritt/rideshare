@@ -15,6 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Start minikube
+        uses: medyagh/setup-minikube@latest
+        with:
+          addons: ingress
+
       - name: delete minikube deployments
         run: |
           eval $(minikube -p minikube docker-env)
@@ -83,11 +88,6 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
-      - name: Start minikube
-        uses: medyagh/setup-minikube@latest
-        with:
-          addons: ingress
-
       - name: Deploy testenv to minikube
         run: |
           eval $(minikube -p minikube docker-env)
