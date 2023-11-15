@@ -57,7 +57,7 @@ func GetTripRequestDistanceMatrix(ctx context.Context, client *maps.Client, req 
 	return response, nil
 }
 
-// query mongodb for trips that are in pending and within the specified proximity
+// GetTripsInProximity query mongodb for trips that are in pending and within the specified proximity
 func GetTripsInProximity(ctx context.Context, gmaps_api_key string, client *mongo.Client, driver_location string, proximity_distance string, units string) (*trippb.GetTripsByProximityResponse, error) {
 	log.Info("GetTripsInProximity start")
 	defer log.Info("GetTripsInProximity end")
@@ -108,7 +108,7 @@ func GetTripsInProximity(ctx context.Context, gmaps_api_key string, client *mong
 			log.Debugf("Trip is within the specified proximity")
 
 			tripResponse = append(tripResponse, &trippb.TripResponse{
-				TripId: 								 pendingTrip.TripId,
+				TripId:                                 pendingTrip.TripId,
 				DriverLocationToPassengerStartDistance: tripDetails.Details.DriverLocationToPassengerStartDistance,
 				DriverLocationToPassengerStartDuration: tripDetails.Details.DriverLocationToPassengerStartDuration.String(),
 				PassengerStartToPassengerEndDistance:   tripDetails.Details.PassengerStartToPassengerEndDistance,
