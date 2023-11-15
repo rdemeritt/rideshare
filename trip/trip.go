@@ -32,7 +32,7 @@ type Trip struct {
 	Details     Details     `json:"details"`
 }
 
-// convert Trip object to JSON
+// ToJSON convert Trip object to JSON
 func (t *Trip) ToJSON() (string, error) {
 	jsonBytes, err := json.Marshal(t)
 	if err != nil {
@@ -41,7 +41,7 @@ func (t *Trip) ToJSON() (string, error) {
 	return string(jsonBytes), nil
 }
 
-// create Trip object w/ the Coordinates struct populated
+// NewTrip create Trip object w/ the Coordinates struct populated
 func NewTrip(PassengerStart string, PassengerEnd string) *Trip {
 	return &Trip{
 		Coordinates: Coordinates{
@@ -51,7 +51,7 @@ func NewTrip(PassengerStart string, PassengerEnd string) *Trip {
 	}
 }
 
-// create emtpy Trip object
+// NewEmptyTrip create empty Trip object
 func NewEmptyTrip() *Trip {
 	return &Trip{}
 }
@@ -59,7 +59,7 @@ func NewEmptyTrip() *Trip {
 func (t *Trip) PopulateTripDetails(dmr *maps.DistanceMatrixResponse) {
 	log.Debugf("PopulateTripDetails start")
 	defer log.Debugf("PopulateTripDetails end")
-	
+
 	t.Details.DriverLocationToPassengerStartDistance = dmr.Rows[0].Elements[0].Distance.HumanReadable
 	t.Details.DriverLocationToPassengerStartDuration = dmr.Rows[0].Elements[0].Duration
 	t.Details.PassengerStartToPassengerEndDistance = dmr.Rows[1].Elements[1].Distance.HumanReadable
