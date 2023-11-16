@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type server struct {
+type TripServer struct {
 	config.Config
 	trippb.TripServiceServer
 }
@@ -33,7 +33,7 @@ func StartTripServer(conf config.Config) {
 	grpcServer := grpc.NewServer()
 
 	// Register the TripService server
-	trippb.RegisterTripServiceServer(grpcServer, &server{Config: conf})
+	trippb.RegisterTripServiceServer(grpcServer, &TripServer{Config: conf})
 
 	// Start the gRPC server
 	log.Debugf("Starting gRPC server on port %s", conf.GRPCPort)
@@ -44,7 +44,7 @@ func StartTripServer(conf config.Config) {
 
 // take a new TripRequest and insert a new TripRequest entry, containing only the PassengerStart and PassengerEnd values,
 // into the mongodb database
-func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
+func (s *TripServer) CreateTripRequest(ctx context.Context, req *trippb.TripRequest) (*trippb.TripRequest, error) {
 	log.Info("CreateTripRequest start")
 	defer log.Info("CreateTripRequest end")
 
@@ -62,7 +62,7 @@ func (s *server) CreateTripRequest(ctx context.Context, req *trippb.TripRequest)
 	return req, err
 }
 
-func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
+func (s *TripServer) CalculateTripById(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
 	log.Info("CalculateTripById start")
 	defer log.Info("CalculateTripById end")
 
@@ -102,7 +102,7 @@ func (s *server) CalculateTripById(ctx context.Context, req *trippb.TripRequest)
 	}, nil
 }
 
-func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsByProximityRequest) (*trippb.GetTripsByProximityResponse, error) {
+func (s *TripServer) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsByProximityRequest) (*trippb.GetTripsByProximityResponse, error) {
 	// get mongo client
 	client, err := database.GetMongoDBClient(ctx, &s.Config.Database)
 	common.Check(err)
@@ -116,7 +116,7 @@ func (s *server) GetTripsByProximity(ctx context.Context, req *trippb.GetTripsBy
 	return res, nil
 }
 
-func (s *server) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
+func (s *TripServer) CalculateNewTrip(ctx context.Context, req *trippb.TripRequest) (*trippb.TripResponse, error) {
 	log.Debugf("CalculateNewTrip request: %v", req)
 	// Create a new Trip object
 	t := trip.NewTrip(req.PassengerStart, req.PassengerEnd)
