@@ -2,3 +2,6 @@ logs.txt
 .DS_Store
 obsfuscate.txt
 trip_server
+.idea/modules.xml
+.idea/rideshare.iml
+.idea/vcs.xml
