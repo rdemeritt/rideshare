@@ -58,7 +58,7 @@ func PopulateTrips() {
 			if chosenItem == "citia" {
 				cmd = exec.Command(
 					"grpcurl",
-					"-proto ../proto/*.proto",
+					"-proto ../../proto/*.proto",
 					"-plaintext",
 					"-d '{\"passenger_start\": \""+citia.Name+","+citia.ZipCode+"\", \"passenger_end\": \""+citib.Name+","+citib.ZipCode+"\"}'",
 					hostname+":"+port,
@@ -67,7 +67,7 @@ func PopulateTrips() {
 			} else {
 				cmd = exec.Command(
 					"grpcurl",
-					"-proto ../proto/*.proto",
+					"-proto ../../proto/*.proto",
 					"-plaintext",
 					"-d '{\"passenger_start\": \""+citib.Name+","+citib.ZipCode+"\", \"passenger_end\": \""+citia.Name+","+citia.ZipCode+"\"}'",
 					hostname+":"+port,
